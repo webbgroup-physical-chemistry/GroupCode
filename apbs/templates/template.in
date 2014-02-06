@@ -1,0 +1,540 @@
+read 
+    mol pqr PQRNAME 
+end 
+
+########## 10 193 NCd ##########
+elec 
+    mg-manual
+    dime 97 97 97
+    glen 240.0 240.0 240.0 
+    gcent mol 1
+    mol 1
+    lpbe
+    bcfl sdh
+    ion charge 1 conc 0.150 radius 2.0
+    ion charge -1 conc 0.150 radius 2.0
+    pdie 2.0
+    sdie 2.0
+    chgm spl2
+    srfm mol
+    srad 1.4
+    sdens 10.0
+    temp 300.0
+    calcenergy total
+    calcforce no
+end
+elec 
+    mg-manual
+    glen 10 10 10
+    dime 193 193 193 
+    gcent CDCOORDS 
+    mol 1 
+    lpbe 
+    bcfl focus 
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 2.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_2_10_193 
+end 
+
+########## 19 193 NCd ##########
+elec 
+    mg-manual
+    dime 97 97 97
+    glen 240.0 240.0 240.0 
+    gcent mol 1
+    mol 1
+    lpbe
+    bcfl sdh
+    ion charge 1 conc 0.150 radius 2.0
+    ion charge -1 conc 0.150 radius 2.0
+    pdie 2.0
+    sdie 2.0
+    chgm spl2
+    srfm mol
+    srad 1.4
+    sdens 10.0
+    temp 300.0
+    calcenergy total
+    calcforce no
+end
+elec 
+    mg-manual
+    glen 19 19 19
+    dime 193 193 193 
+    gcent CDCOORDS 
+    mol 1 
+    lpbe 
+    bcfl focus 
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 2.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_2_19_193 
+end 
+
+########## 10 193 RCoM ##########
+elec 
+    mg-manual
+    dime 97 97 97
+    glen 240.0 240.0 240.0 
+    gcent mol 1
+    mol 1
+    lpbe
+    bcfl sdh
+    ion charge 1 conc 0.150 radius 2.0
+    ion charge -1 conc 0.150 radius 2.0
+    pdie 2.0
+    sdie 2.0
+    chgm spl2
+    srfm mol
+    srad 1.4
+    sdens 10.0
+    temp 300.0
+    calcenergy total
+    calcforce no
+end
+elec 
+    mg-manual
+    glen 10 10 10
+    dime 193 193 193 
+    gcent RCOM10 
+    mol 1 
+    lpbe 
+    bcfl focus 
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 2.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_2_10_193_1 
+end 
+
+########## 19 193 RCoM ##########
+elec 
+    mg-manual
+    dime 97 97 97
+    glen 240.0 240.0 240.0 
+    gcent mol 1
+    mol 1
+    lpbe
+    bcfl sdh
+    ion charge 1 conc 0.150 radius 2.0
+    ion charge -1 conc 0.150 radius 2.0
+    pdie 2.0
+    sdie 2.0
+    chgm spl2
+    srfm mol
+    srad 1.4
+    sdens 10.0
+    temp 300.0
+    calcenergy total
+    calcforce no
+end
+elec 
+    mg-manual
+    glen 19 19 19
+    dime 193 193 193 
+    gcent RCOM19 
+    mol 1 
+    lpbe 
+    bcfl focus 
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 2.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_2_19_193_1 
+end 
+
+########## 10 193 SCoM ##########
+elec 
+    mg-manual
+    dime 97 97 97
+    glen 240.0 240.0 240.0 
+    gcent mol 1
+    mol 1
+    lpbe
+    bcfl sdh
+    ion charge 1 conc 0.150 radius 2.0
+    ion charge -1 conc 0.150 radius 2.0
+    pdie 2.0
+    sdie 2.0
+    chgm spl2
+    srfm mol
+    srad 1.4
+    sdens 10.0
+    temp 300.0
+    calcenergy total
+    calcforce no
+end
+elec 
+    mg-manual
+    glen 10 10 10
+    dime 193 193 193 
+    gcent SCOM10 
+    mol 1 
+    lpbe 
+    bcfl focus 
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 2.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_2_10_193_0 
+end 
+
+########## 19 193 SCoM ##########
+elec 
+    mg-manual
+    dime 97 97 97
+    glen 240.0 240.0 240.0 
+    gcent mol 1
+    mol 1
+    lpbe
+    bcfl sdh
+    ion charge 1 conc 0.150 radius 2.0
+    ion charge -1 conc 0.150 radius 2.0
+    pdie 2.0
+    sdie 2.0
+    chgm spl2
+    srfm mol
+    srad 1.4
+    sdens 10.0
+    temp 300.0
+    calcenergy total
+    calcforce no
+end
+elec 
+    mg-manual
+    glen 19 19 19
+    dime 193 193 193 
+    gcent SCOM19 
+    mol 1 
+    lpbe 
+    bcfl focus 
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 2.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_2_19_193_0
+end 
+
+########## 30 129 ##########
+elec 
+    mg-manual
+    dime 97 97 97
+    glen 240.0 240.0 240.0 
+    gcent mol 1
+    mol 1
+    lpbe
+    bcfl sdh
+    ion charge 1 conc 0.150 radius 2.0
+    ion charge -1 conc 0.150 radius 2.0
+    pdie 2.0
+    sdie 2.0
+    chgm spl2
+    srfm mol
+    srad 1.4
+    sdens 10.0
+    temp 300.0
+    calcenergy total
+    calcforce no
+end
+elec 
+    mg-manual
+    glen 30 45 40
+    dime 129 193 161 
+    gcent SCOM 
+    mol 1 
+    lpbe 
+    bcfl focus 
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 2.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_2_30_129 
+end 
+
+########## 60 257 ##########
+elec 
+    mg-manual
+    dime 97 97 97
+    glen 240.0 240.0 240.0 
+    gcent mol 1
+    mol 1
+    lpbe
+    bcfl sdh
+    ion charge 1 conc 0.150 radius 2.0
+    ion charge -1 conc 0.150 radius 2.0
+    pdie 2.0
+    sdie 2.0
+    chgm spl2
+    srfm mol
+    srad 1.4
+    sdens 10.0
+    temp 300.0
+    calcenergy total
+    calcforce no
+end
+elec 
+    mg-manual
+    glen 60 45 40
+    dime 257 193 161 
+    gcent SCOM 
+    mol 1 
+    lpbe 
+    bcfl focus 
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 2.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_2_60_257 
+end 
+
+########## 10 193 mg-auto RCoM ##########
+elec 
+    mg-auto
+    cglen 240 240 240
+    cgcent mol 1
+    fglen 10 10 10
+    fgcent RCOM10
+    dime 193 193 193  
+    mol 1 
+    lpbe 
+    bcfl sdh   
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 78.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_rcom_auto_78_10_193
+end 
+elec 
+    mg-auto
+    cglen 240 240 240
+    cgcent mol 1
+    fglen 10 10 10
+    fgcent RCOM10
+    dime 193 193 193  
+    mol 1 
+    lpbe 
+    bcfl sdh   
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 2.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_rcom_auto_2_10_193 
+end 
+
+########## 10 193 mg-auto NCd ##########
+elec 
+    mg-auto
+    cglen 240 240 240
+    cgcent mol 1
+    fglen 10 10 10
+    fgcent CDCOORDS
+    dime 193 193 193  
+    mol 1 
+    lpbe 
+    bcfl sdh   
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 78.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_ncd_auto_78_10_193
+end 
+elec 
+    mg-auto
+    cglen 240 240 240
+    cgcent mol 1
+    fglen 10 10 10
+    fgcent CDCOORDS
+    dime 193 193 193  
+    mol 1 
+    lpbe 
+    bcfl sdh   
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 2.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_ncd_auto_2_10_193
+end 
+
+########## 19 193 mg-auto RCoM ##########
+elec 
+    mg-auto
+    cglen 240 240 240
+    cgcent mol 1
+    fglen 19 19 19
+    fgcent RCOM19
+    dime 193 193 193  
+    mol 1 
+    lpbe 
+    bcfl sdh   
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 78.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_rcom_auto_78_19_193
+end 
+elec 
+    mg-auto
+    cglen 240 240 240
+    cgcent mol 1
+    fglen 19 19 19
+    fgcent RCOM19
+    dime 193 193 193  
+    mol 1 
+    lpbe 
+    bcfl sdh   
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 2.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_rcom_auto_2_19_193 
+end 
+
+########## 19 193 mg-auto NCd ##########
+elec 
+    mg-auto
+    cglen 240 240 240
+    cgcent mol 1
+    fglen 19 19 19
+    fgcent CDCOORDS
+    dime 193 193 193  
+    mol 1 
+    lpbe 
+    bcfl sdh   
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 78.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_ncd_auto_78_19_193
+end 
+elec 
+    mg-auto
+    cglen 240 240 240
+    cgcent mol 1
+    fglen 19 19 19
+    fgcent CDCOORDS
+    dime 193 193 193  
+    mol 1 
+    lpbe 
+    bcfl sdh   
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0 
+    sdie 2.0 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0 
+    calcenergy total 
+    calcforce no 
+    write atompot flat OUTPUT_ncd_auto_2_19_193 
+end 
+quit

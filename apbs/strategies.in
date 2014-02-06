@@ -1,0 +1,28 @@
+# stage2
+# DIME 
+# FOCUS
+elec 
+    mg-manual
+
+    glen FOCUS
+    dime DIME
+    gcent CDCOORDS
+    mol 1
+    lpbe 
+    bcfl map
+    usemap pot 1
+
+    ion charge 1 conc 0.150 radius 2.0 
+    ion charge -1 conc 0.150 radius 2.0 
+    pdie 2.0
+    sdie 78.0
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    temp 300.0
+    calcenergy total
+    calcforce no
+    write atompot flat OUTPUT
+end
+

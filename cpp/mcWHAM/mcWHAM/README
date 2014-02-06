@@ -1,0 +1,7 @@
+This was written to follow the methodology presented in Dr. Dan Ensign's mcWHAM-torsion.py script.
+
+It has sucessfully been compiled using gcc 4.6.3 and gcc 4.2.1 i686-apple-darwin11-llvm.  It has NOT been tested with other compilers.
+
+The script "mcTest_Model.py" should be run from the test/ directory.  It has some options (mcTest_Model.py -h) that could be worth playing around with.  
+
+I've added a crude Makefile to be used with gnu make.  Edit as necessary--I am not particularly adept with makefiles yet.

@@ -1,0 +1,234 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3C752D9115D4620700875E5E /* mcWHAM.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3C752D9015D4620700875E5E /* mcWHAM.1 */; };
+		3CD4C73A15EBF53B0049E408 /* WHAM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3CD4C73915EBF53B0049E408 /* WHAM.cpp */; };
+		3CEF24DE17132C3300D63892 /* fileoptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3CEF24DD17132C3300D63892 /* fileoptions.cpp */; };
+		3CEF24E117132CDB00D63892 /* BefeusTools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3CEF24E017132CDB00D63892 /* BefeusTools.cpp */; };
+		3CEF24E317133CC700D63892 /* WHAMfunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3CEF24E217133CC700D63892 /* WHAMfunctions.cpp */; };
+		3CEF24E5171345D600D63892 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 3CEF24E4171345D600D63892 /* Makefile */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3C752D8815D4620700875E5E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				3C752D9115D4620700875E5E /* mcWHAM.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		3C752D8A15D4620700875E5E /* mcWHAM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = mcWHAM; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C752D9015D4620700875E5E /* mcWHAM.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = mcWHAM.1; sourceTree = "<group>"; };
+		3C752D9B15D4675B00875E5E /* BefeusTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BefeusTools.h; sourceTree = "<group>"; };
+		3C752D9C15D4676900875E5E /* WHAMfunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WHAMfunctions.h; sourceTree = "<group>"; };
+		3C752D9D15D4696600875E5E /* fileoptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fileoptions.h; sourceTree = "<group>"; };
+		3CD4C73915EBF53B0049E408 /* WHAM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WHAM.cpp; sourceTree = "<group>"; };
+		3CEF24DD17132C3300D63892 /* fileoptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fileoptions.cpp; sourceTree = "<group>"; };
+		3CEF24E017132CDB00D63892 /* BefeusTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BefeusTools.cpp; sourceTree = "<group>"; };
+		3CEF24E217133CC700D63892 /* WHAMfunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WHAMfunctions.cpp; sourceTree = "<group>"; };
+		3CEF24E4171345D600D63892 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3C752D8715D4620700875E5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3C752D7F15D4620700875E5E = {
+			isa = PBXGroup;
+			children = (
+				3C752D8D15D4620700875E5E /* mcWHAM */,
+				3C752D8B15D4620700875E5E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3C752D8B15D4620700875E5E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3C752D8A15D4620700875E5E /* mcWHAM */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3C752D8D15D4620700875E5E /* mcWHAM */ = {
+			isa = PBXGroup;
+			children = (
+				3CD4C73915EBF53B0049E408 /* WHAM.cpp */,
+				3C752D9D15D4696600875E5E /* fileoptions.h */,
+				3CEF24DD17132C3300D63892 /* fileoptions.cpp */,
+				3C752D9B15D4675B00875E5E /* BefeusTools.h */,
+				3CEF24E4171345D600D63892 /* Makefile */,
+				3CEF24E017132CDB00D63892 /* BefeusTools.cpp */,
+				3C752D9C15D4676900875E5E /* WHAMfunctions.h */,
+				3CEF24E217133CC700D63892 /* WHAMfunctions.cpp */,
+				3C752D9015D4620700875E5E /* mcWHAM.1 */,
+			);
+			path = mcWHAM;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3C752D8915D4620700875E5E /* mcWHAM */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3C752D9415D4620700875E5E /* Build configuration list for PBXNativeTarget "mcWHAM" */;
+			buildPhases = (
+				3C752D8615D4620700875E5E /* Sources */,
+				3C752D8715D4620700875E5E /* Frameworks */,
+				3C752D8815D4620700875E5E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = mcWHAM;
+			productName = mcWHAM;
+			productReference = 3C752D8A15D4620700875E5E /* mcWHAM */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3C752D8115D4620700875E5E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+				ORGANIZATIONNAME = "The University of Texas at Austin";
+			};
+			buildConfigurationList = 3C752D8415D4620700875E5E /* Build configuration list for PBXProject "mcWHAM" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 3C752D7F15D4620700875E5E;
+			productRefGroup = 3C752D8B15D4620700875E5E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3C752D8915D4620700875E5E /* mcWHAM */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3C752D8615D4620700875E5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3CD4C73A15EBF53B0049E408 /* WHAM.cpp in Sources */,
+				3CEF24DE17132C3300D63892 /* fileoptions.cpp in Sources */,
+				3CEF24E117132CDB00D63892 /* BefeusTools.cpp in Sources */,
+				3CEF24E317133CC700D63892 /* WHAMfunctions.cpp in Sources */,
+				3CEF24E5171345D600D63892 /* Makefile in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3C752D9215D4620700875E5E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		3C752D9315D4620700875E5E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		3C752D9515D4620700875E5E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		3C752D9615D4620700875E5E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3C752D8415D4620700875E5E /* Build configuration list for PBXProject "mcWHAM" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3C752D9215D4620700875E5E /* Debug */,
+				3C752D9315D4620700875E5E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3C752D9415D4620700875E5E /* Build configuration list for PBXNativeTarget "mcWHAM" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3C752D9515D4620700875E5E /* Debug */,
+				3C752D9615D4620700875E5E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3C752D8115D4620700875E5E /* Project object */;
+}
