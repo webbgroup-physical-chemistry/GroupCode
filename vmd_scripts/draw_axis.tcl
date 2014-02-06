@@ -1,4 +1,11 @@
-proc usual_colors { } { 
+proc usual_colors { plrx plrz plrz nrmx nrmy nrmz } { 
+# Usage: usual_colors <polar x vector> <polar y vector> <polar z vector>
+# <normal x vector> <normal y vector> <normal z vector>
+#
+# We use the polar axis and normal to the plane to calculate the plane
+# because it's easier that way.
+# Get the vectors from using g_interface with the -v flag
+
 # Get rid of any reps already present
 for {set i 0} {$i < 5000} {incr i} {
 	mol delrep 0 top
@@ -60,9 +67,8 @@ material change opacity Transparent 0.20
 
 # Here we start to build the lines...
 set w 3
-set pln { 1.450538 -0.158592  4.429877}
-set plr { 0.136463  0.989798  0.040970}
-set nrm {-0.819996  0.089653  0.565304}
+set plr { plrx plry plrz }
+set nrm { nrmx nrmy nrmz }
 
 set com1 [measure center $ral weight mass]
 set com2 [measure center $gtpase weight mass]
