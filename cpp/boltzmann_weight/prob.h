@@ -9,7 +9,6 @@
 #include <cmath>
 #include <ctime>
 #include <cstdlib>
-#include <thread>
 #include <stdio.h>
 #include <iomanip>
 
@@ -87,7 +86,6 @@ public:
     average BootstrapAverage();
     void resampleAverage();
     void bootstrap(int nresamples = 10000);
-    void bootstrap_threading(int nresamples = 10000);
     void addFrame(experiment addframe,bool angle = false);
 };  
 

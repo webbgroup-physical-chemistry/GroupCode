@@ -369,7 +369,6 @@ void Stats::bootstrap(int nresamples)
     int seed = time(NULL);
     std::cout << "Performing " << nresamples << " resampling experiments using seed: " << seed << std::endl;
     srand(seed);
-    std::vector<std::thread> threads;
     for (int i=0; i<nresamples; i++) 
     {
         resampleAverage();
@@ -397,56 +396,6 @@ void Stats::bootstrap(int nresamples)
         bootstrapResults = linearAverage(resampled);
     }
     for (int i=0;i<bootstrapResults.avg.size();i++){
-    }
-    std::cout<<std::endl;
-}
-
-void Stats::bootstrap_threading(int nresamples)
-{
-    // Initiate random seed
-    srand(time(NULL));
-    srand(7);
-    int nthreads = std::thread::hardware_concurrency();
-    int n=0;
-    std::vector<std::thread> threads;
-    for (int i=0; i<nresamples; i+=nthreads) 
-    {
-        for (int j=0;j<nthreads;j++)
-        {
-            if (n > nresamples-1){break;}
-            threads.push_back(std::thread(&Stats::resampleAverage,this));
-//            resampleAverage();
-            n++;
-        }
-        for (auto& th : threads) th.join();
-        threads.clear();
-    }
-    // Let's make this an experiment so it can interact with our
-    // previously made functions;
-    experiment resampled;
-    std::vector<double> datvec;
-    double inverseNresamples = 1./nresamples;
-    for (int i=0; i<results.size() ; i++){
-        for (int j=0; j<results[0].avg.size(); j++){
-            datvec.push_back(results[i].avg[j]);
-        }
-        resampled.dat.push_back(datvec);
-        resampled.prob.push_back(inverseNresamples);
-        datvec.clear();
-    }
-    std::cout<<" Average: " <<std::endl;
-
-    average boostrapResults;
-    if (angular)
-    {
-        bootstrapResults = angleAverage(resampled);
-    }
-    else
-    {
-        bootstrapResults = linearAverage(resampled);
-    }
-    for (int i=0;i<bootstrapResults.avg.size();i++){
-        std::cout << bootstrapResults.avg[i] << " +/- " << bootstrapResults.std[i] << "\t";
     }
     std::cout<<std::endl;
 }
