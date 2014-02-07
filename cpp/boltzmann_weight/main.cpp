@@ -19,31 +19,52 @@ int main(int argc, char * argv[])
 	parser.add_option("-l",\
 					  "List of files: <.bin> <.xvg>",\
 					  "test/list.file");
+    parser.add_booloption("-a",\
+                          "Use angular average (periodic)",\
+                          false);
+    parser.add_option("-o",\
+                      "output file name",\
+                      "out.boltzmann");
+    parser.add_option("-n",\
+                      "Number of bootstrapping experiments",\
+                      "100");
+    parser.add_booloption("-b",\
+                          "Do bootstrapping",\
+                          false);
+
                        
 	parser.parse_args();
-	string probfile = parser.Options()[0];
-	string listfile = parser.Options()[1];
+	std::string probfile = parser.Options()[0];
+	std::string listfile = parser.Options()[1];
+    bool angular = parser.boolOptions()[0];
+    std::string outfile = parser.Options()[2];
+    std::string donsteps = parser.Options()[3].c_str();
+    int nsteps ; 
+    std::stringstream linestream(donsteps);
+    linestream >> nsteps;
+    bool doBootstrapping = parser.boolOptions()[1];
 
 	Probability probability;
 	probability.ReadProb( probfile );
-	std::vector<double> prob = probability.Prob();
 
-	std::cout << "There are " << prob.size()-1 << " bins." << std::endl;
-/*	double total = 0;
-	for (int i = 0 ; i < prob.size() ; i++ ) 
-	{
-  		std::cout << i << " " << prob[i] << std::endl;
-		total += prob[i];
-	}
-	std::cout << total << std::endl;
-	std::cout << prob.size() << std::endl;
-*/
+    Lists list;
+    list.ReadList(listfile);
+    list.ReadListInputs();
+    list.FrameProb(probability);
+    experiment results = list.ListDat();
 
-//	Dats b;
-//	b.ReadDat( blah );
-//	std::vector<int> bb = b.Bin();
-//	for (int i=0;i<bb.size();i++){std::cout<<i<<" "<<bb[i]<<"\n";}
-
+    Stats stats;
+    stats.addFrame(results,angular);
+    average bw, bs;
+    bw = stats.BoltzmannAverage();
+    if (doBootstrapping)
+    {
+        stats.bootstrap(nsteps);
+    bs = stats.BootstrapAverage();
+    }
+    //Write output
+    WriteOutputs write;
+    write.write(outfile,probfile,bw,bs,nsteps);
 	return 0;
 };
 

@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <vector>
 #include <iostream>
+#include <stdio.h>
 
 #endif /* defined(__Dielectric_Map__MyOptionParser__) */
 

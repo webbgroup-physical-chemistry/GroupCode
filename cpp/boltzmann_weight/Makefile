@@ -1,5 +1,5 @@
-CC=g++
-CFLAGS=-I. -O
+CC=/opt/local/bin/g++-mp-4.7
+CFLAGS=-I. -O -std=c++0x -pthread
 DEPS = MyOptionParser.h prob.h
 OBJ = main.o MyOptionParser.o prob.o
 

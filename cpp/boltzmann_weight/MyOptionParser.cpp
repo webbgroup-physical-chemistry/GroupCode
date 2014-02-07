@@ -24,7 +24,7 @@ void OptionParser::inputparameters()
     int i = 0;
     for (vector<string>::iterator n = options.begin(); n != options.end(); ++n)
     {
-        cout << "\t" <<  flags[i] << "\t<" << *n << "> \t" << helps[i] << endl;
+        cout << "\t" <<  flags[i] << "\n\t\t<" << *n << ">\n\t\t" << helps[i] << endl;
         i++;
     }
     i=0;
@@ -32,15 +32,15 @@ void OptionParser::inputparameters()
     {
         if (*n)
         {
-            cout <<"\t" << boolflags[i] << "\tTrue\t" << boolhelps[i]<<endl;
+            cout <<"\t" << boolflags[i] << "\n\t\tTrue\n\t\t" << boolhelps[i]<<endl;
         }
         else
         {
-            cout <<"\t" << boolflags[i] << "\tFalse\t" << boolhelps[i]<<endl;
+            cout <<"\t" << boolflags[i] << "\n\t\tFalse\n\t\t" << boolhelps[i]<<endl;
         }
         i++;
     }
-    cout <<"\t" << "-h" << "\tHelp" << endl;
+    cout <<"\t" << "-h" << "\n\t\tHelp" << endl;
     return;
 };
 
