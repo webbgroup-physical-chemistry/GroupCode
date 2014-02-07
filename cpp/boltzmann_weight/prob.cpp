@@ -427,20 +427,16 @@ bool WriteOutputs::fexists( std::string filename )
 
 void WriteOutputs::backup( std::string filename )
 {
-    int n=0;
-    std:: string i;
+    int n=0, nchars;
     std::string newname = filename;
     if (fexists(filename))
     {
         while (fexists(newname))
         {
+            char buffer[1054];
             newname.clear();
-            newname.append("#");
-            newname.append(filename);
-            i = std::to_string(n);
-            newname.append(".");
-            newname.append(i);
-            newname.append("#");
+            nchars = sprintf(buffer,"#%s.%d#",filename.c_str(),n);
+            newname = buffer;
             n++;
             if (n>100)
             {

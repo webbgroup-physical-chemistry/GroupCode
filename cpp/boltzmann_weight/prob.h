@@ -1,6 +1,3 @@
-//#ifndef __Boltzmann_Weight__prob__
-//#define __Boltzmann_Weight__prob__
-
 #include <iostream>
 #include <vector>
 #include <string>
@@ -12,9 +9,10 @@
 #include <stdio.h>
 #include <iomanip>
 
-#define _USE_MATH_DEFINES
+#ifndef M_PI
+#define M_PI 3.14159265358979323846264338327
+#endif
 
-//#endif
 
 typedef std::vector< std::vector<double> > Matrix;
 typedef std::vector< std::vector<std::string> > DatList;
