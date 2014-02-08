@@ -59,7 +59,7 @@ int main(int argc, char * argv[])
     bw = stats.BoltzmannAverage();
     if (doBootstrapping)
     {
-        stats.bootstrap(nsteps);
+        stats.bootstrap_threading(nsteps);
     bs = stats.BootstrapAverage();
     }
     //Write output

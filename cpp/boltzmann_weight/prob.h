@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <stdio.h>
 #include <iomanip>
+#include <thread>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846264338327
@@ -84,7 +85,9 @@ public:
     average BootstrapAverage();
     void resampleAverage();
     void bootstrap(int nresamples = 10000);
+    void bootstrap_threading(int nresamples = 10000);
     void addFrame(experiment addframe,bool angle = false);
+    void loop(int stepsize, int stop, int thread);
 };  
 
 class WriteOutputs

@@ -400,6 +400,82 @@ void Stats::bootstrap(int nresamples)
     std::cout<<std::endl;
 }
 
+void Stats::loop(int stepsize, int stop, int thread)
+{
+    for (int i=0; i<stop ; i+=stepsize)
+    {
+        if (i+thread < stop)
+        {
+            std::cout << thread << " " << i+thread << std::endl;
+            resampleAverage();
+        }
+    }
+}
+
+void Stats::bootstrap_threading(int nresamples)
+{
+    // Initiate random seed
+    int seed = time(NULL);
+    std::cout << "Performing " << nresamples << " resampling experiments using seed: " << seed << std::endl;
+    srand(seed);
+    int nthreads=5;
+    std::vector<std::thread> threads(nthreads);
+    // Make 5n threads and give each of them a piece of the job
+    for (int j=0; j<nthreads; j++)
+    {
+        threads.at(j) = std::thread(&Stats::loop,this,nthreads,nresamples,j);
+    }
+    for (auto& th : threads) th.join();
+    threads.clear();
+
+    // Make a new thread every piece    
+/*
+    for (int i=0; i<nresamples; i+=nthreads) 
+    {
+        for (int j=0; j<nthreads ; j++)
+        {
+            if (n<nresamples)
+            {
+                std::cout << n << " on THREAD-" << j << std::endl;
+                threads.at(j) = std::thread(&Stats::resampleAverage,this);
+                
+                //threads.push_back(std::thread(&Stats::resampleAverage,this));
+ //               resampleAverage();
+                //threads.push_back(std::thread(foo,n,j));
+                n++;
+            }
+        }
+        for (auto& th : threads) th.join();
+//        threads.clear();
+    }
+*/
+    // Let's make this an experiment so it can interact with our
+    // previously made functions;
+    experiment resampled;
+    std::vector<double> datvec;
+    double inverseNresamples = 1./nresamples;
+    for (int i=0; i<results.size() ; i++){
+        for (int j=0; j<results[0].avg.size(); j++){
+            datvec.push_back(results[i].avg[j]);
+        }
+        resampled.dat.push_back(datvec);
+        resampled.prob.push_back(inverseNresamples);
+        datvec.clear();
+    }
+
+    if (angular)
+    {
+        bootstrapResults = angleAverage(resampled);
+    }
+    else
+    {
+        bootstrapResults = linearAverage(resampled);
+    }
+    for (int i=0;i<bootstrapResults.avg.size();i++){
+    }
+    std::cout<<std::endl;
+}
+
 void Stats::addFrame( experiment addframe, bool angle ){
     frames = addframe;
     angular = angle;

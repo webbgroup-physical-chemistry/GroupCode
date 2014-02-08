@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-I. -O -std=c++0x 
+CFLAGS=-I. -O -std=c++0x -pthread -g 
 DEPS = MyOptionParser.h prob.h
 OBJ = main.o MyOptionParser.o prob.o
 
