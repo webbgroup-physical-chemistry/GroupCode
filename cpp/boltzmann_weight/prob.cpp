@@ -417,13 +417,14 @@ void Stats::bootstrap_threading(int nresamples)
     // Initiate random seed
     results = new average[nresamples];
     int seed = time(NULL);
-    std::cout << "Performing " << nresamples << " resampling experiments using seed: " << seed << std::endl;
     srand(seed);
+    std::cout << "Performing " << nresamples << " resampling experiments using seed: " << seed << std::endl;
     int nthreads=16;
     std::vector<std::thread> threads(nthreads);
     // Make 5n threads and give each of them a piece of the job
     for (int j=0; j<nthreads; j++)
     {
+        std::cout << seed*j*j << std::endl;
         threads.at(j) = std::thread(&Stats::loop,this,nthreads,nresamples,j);
     }
     for (auto& th : threads) th.join();
@@ -464,6 +465,7 @@ void Stats::bootstrap_threading(int nresamples)
         resampled.prob.push_back(inverseNresamples);
         datvec.clear();
     }
+    delete [] results;
 
     if (angular)
     {
