@@ -73,7 +73,8 @@ public:
 class Stats
 {
     average boltzmannAverage;
-    std::vector<average> results;
+//    std::vector<average> results;
+    average * results;
     bool angular;
     experiment frames;
     average bootstrapResults;
@@ -83,7 +84,7 @@ public:
     average linearAverage(experiment frames);
     average BoltzmannAverage();
     average BootstrapAverage();
-    void resampleAverage();
+    void resampleAverage(int slot);
     void bootstrap(int nresamples = 10000);
     void bootstrap_threading(int nresamples = 10000);
     void addFrame(experiment addframe,bool angle = false);

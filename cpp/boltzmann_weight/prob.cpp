@@ -329,7 +329,7 @@ average Stats::BoltzmannAverage(){return boltzmannAverage;}
 
 average Stats::BootstrapAverage(){return bootstrapResults;}
 
-void Stats::resampleAverage()
+void Stats::resampleAverage(int slot)
 {
     average result;
     experiment resample;
@@ -350,9 +350,9 @@ void Stats::resampleAverage()
         result = linearAverage(resample);
     }
     for (int i=0;i<result.avg.size();i++){
-//        std::cout << "Resample: " << result.avg[i] << " +/- " << result.std[i] << std::endl;
     }
-    results.push_back(result);
+//    results.push_back(result);
+    results[slot] = result;
 
     resample.dat.clear();
     resample.prob.clear();
@@ -371,14 +371,14 @@ void Stats::bootstrap(int nresamples)
     srand(seed);
     for (int i=0; i<nresamples; i++) 
     {
-        resampleAverage();
+        resampleAverage(i);
     }
     // Let's make this an experiment so it can interact with our
     // previously made functions;
     experiment resampled;
     std::vector<double> datvec;
     double inverseNresamples = 1./nresamples;
-    for (int i=0; i<results.size() ; i++){
+    for (int i=0; i<nresamples ; i++){
         for (int j=0; j<results[0].avg.size(); j++){
             datvec.push_back(results[i].avg[j]);
         }
@@ -406,8 +406,8 @@ void Stats::loop(int stepsize, int stop, int thread)
     {
         if (i+thread < stop)
         {
-            std::cout << thread << " " << i+thread << std::endl;
-            resampleAverage();
+//            std::cout << thread << " " << i+thread << " " << stop << std::endl;
+            resampleAverage(i+thread);
         }
     }
 }
@@ -415,10 +415,11 @@ void Stats::loop(int stepsize, int stop, int thread)
 void Stats::bootstrap_threading(int nresamples)
 {
     // Initiate random seed
+    results = new average[nresamples];
     int seed = time(NULL);
     std::cout << "Performing " << nresamples << " resampling experiments using seed: " << seed << std::endl;
     srand(seed);
-    int nthreads=5;
+    int nthreads=16;
     std::vector<std::thread> threads(nthreads);
     // Make 5n threads and give each of them a piece of the job
     for (int j=0; j<nthreads; j++)
@@ -427,9 +428,9 @@ void Stats::bootstrap_threading(int nresamples)
     }
     for (auto& th : threads) th.join();
     threads.clear();
-
     // Make a new thread every piece    
 /*
+    int n=0;
     for (int i=0; i<nresamples; i+=nthreads) 
     {
         for (int j=0; j<nthreads ; j++)
@@ -437,7 +438,7 @@ void Stats::bootstrap_threading(int nresamples)
             if (n<nresamples)
             {
                 std::cout << n << " on THREAD-" << j << std::endl;
-                threads.at(j) = std::thread(&Stats::resampleAverage,this);
+                threads.at(j) = std::thread(&Stats::resampleAverage,this,n);
                 
                 //threads.push_back(std::thread(&Stats::resampleAverage,this));
  //               resampleAverage();
@@ -446,7 +447,7 @@ void Stats::bootstrap_threading(int nresamples)
             }
         }
         for (auto& th : threads) th.join();
-//        threads.clear();
+        threads.clear();
     }
 */
     // Let's make this an experiment so it can interact with our
@@ -454,9 +455,10 @@ void Stats::bootstrap_threading(int nresamples)
     experiment resampled;
     std::vector<double> datvec;
     double inverseNresamples = 1./nresamples;
-    for (int i=0; i<results.size() ; i++){
+    for (int i=0; i<nresamples ; i++){
         for (int j=0; j<results[0].avg.size(); j++){
             datvec.push_back(results[i].avg[j]);
+            std::cout << i << " " << j << " " << results[i].avg[j] << std::endl;
         }
         resampled.dat.push_back(datvec);
         resampled.prob.push_back(inverseNresamples);
