@@ -73,7 +73,10 @@ def gro_atomid( fileline ) :
     return int(fileline[15:20].split()[0])
     
 def gro_resname( fileline ) : 
-    return fileline[5:9].split()[0]
+    name = fileline[5:9].split()[0]
+    if len(name) > 3 : 
+        name = name[1:]
+    return name
 
 def gro_atomname( fileline ) : 
     return fileline[11:15].split()[0]
@@ -256,33 +259,29 @@ def outdated_align_sequence( a, b ) :
         return shorter, longer, slist, llist
 
 def diff_ndx( new, original, ndxName ) : 
-    """
-	MAJOR CHANGES HAVE BEEN MADE TO ONE OF THE FUNCTIONS THIS FUNCTION IS DEPENDENT
-    UPON!!! USE AT OWN RISK!!!!
-    """
-    printbox("MAJOR CHANGES HAVE BEEN MADE TO ONE OF THE FUNCTIONS THIS FUNCTION IS DEPENDENT UPON!!! USE AT OWN RISK!!!")
-    new.sequence, original.sequence = align_sequence(new.sequence,original.sequence)
-    index = list(new.writeIndex)
-    for i in range(new.natoms) : 
-        if new.resname[i][:2] != original.sequence[new.resid[i]-1][:2] : #so HIE matches HIS
-            if new.index[i]-1 in index : 
-                index.remove(new.index[i]-1)
-        if 'H' == new.atom[i][0] : 
-            if new.index[i]-1 in index : 
-                index.remove(new.index[i]-1)
-    for i in new.perturbed : 
-        if i-1 in index :   # perturbed starts counting at the gro numbering
-            index.remove(i-1)
+    newseq, oseq, newresid, oresid  = align_sequence(new,original)
+    index = []
+    for i in range(new.natoms) :
+        resid = new.resid[i]
+        for j in range(len(newresid)) :
+            if resid == newresid[j] :
+                # This tells us that the residue was part of the aligned sequence
+                # and we still need to know if it's a changed or unchanged residue
+                if oseq[resid-1][:2] != newseq[resid-1][:2] or (oseq[resid-2] == "-" and oseq[resid] == "-") or (newseq[resid-2] == "-" and newseq[resid] == "-") :
+                    pass
+                    #print new.atom[i],resid,new.resname[i],newseq[resid-1],oseq[resid-1]
+                elif 'H' != new.atom[i][0] :
+                    index.append(new.index[i])
     s = "[ unperturbed ]\n"
     for i in index : 
-        s += "%i\n"%(i+1) # gros start couting at one, writeIndex starts counting at zero
+        s += "%i\n"%(i) # gros start couting at one, writeIndex starts counting at zero
     backup_outname(ndxName)
     writeLines(ndxName,s)
     return ndxName
 
 def kabsch_alignment( pose1, pose2 , pose1sel = [], pose2sel = [] ):
     """
-    optAlign performs the Kabsch alignment algorithm upon the N CA C O of two selections.
+    Performs the Kabsch alignment algorithm upon the N CA C O of two selections.
    
     This is a hacky modification for usage with class structure,
  
@@ -383,7 +382,10 @@ class structure() :
         self.natoms = 0
         self.sequence = []
         self.sequence_0 = []
+        self.nterm = []
+        self.cterm = []
         lines = readFile(self.name)
+        at_nterm = True
         for line in lines : 
             if "TER" not in line and "END" not in line and "ENDMDL" not in line : 
                 if self.ext == 'gro' : 
@@ -396,14 +398,23 @@ class structure() :
                         self.resid.append(gro_resid(line))
                         self.resname.append(gro_resname(line))
                         self.writeIndex.append(self.natoms)
+                        if "OC2" == gro_atomname(line) and not at_nterm : 
+                            self.cterm.append(gro_resid(line))
+                            at_nterm = True
+                        if at_nterm and gro_atomname(line) == "CA" : 
+                            self.nterm.append(gro_resid(line))
+                            at_nterm = False
                         self.natoms += 1
                     except (ValueError, IndexError) : 
                         pass
                 elif self.ext == 'pdb' :
                     if ('ATOM' in line or 'HETATM' in line) : 
-                        try : 
-                            l=line.split()
-                            for value in l[-6:-1] : 
+                        try :
+                            l=[line[31:38],line[38:46],line[46:54],line[54:60],line[60:66]]
+                            for value in l :
+                                """print "value=",value
+                                print "float-",float(value)
+                                print "\n"""
                                 float(value)
                             self.line.append(line)
                             self.atom.append(pdb_atomname(line))
@@ -412,6 +423,12 @@ class structure() :
                             self.resid.append(pdb_resid(line))
                             self.resname.append(pdb_resname(line))
                             self.writeIndex.append(self.natoms)
+                            if ("OC2" == pdb_atomname(line) or "OXT" == pdb_atomname(line)) and not at_nterm : 
+                                self.cterm.append(pdb_resid(line))
+                                at_nterm = True
+                            if at_nterm and pdb_atomname(line) == "CA" : 
+                                self.nterm.append(pdb_resid(line))
+                                at_nterm = False
                             self.natoms += 1
                         except (ValueError, IndexError) : 
                             pass
@@ -429,6 +446,9 @@ class structure() :
         if self.ext == 'gro' : 
             self.groHeader = lines[0]
             self.groFooter = lines[-1]
+        else : 
+            self.groHeader = "TITLE Based on %s\n"%self.name
+            self.groFooter = "%10.5f%10.5f%10.5f\n"%(0.,0.,0.)
 
         self.line = numpy.array(self.line)
         self.atom = numpy.array(self.atom)     
@@ -455,16 +475,25 @@ class structure() :
         if atom == None : atom = self.atom[n]
         if isnan(coord[0]) : coord = self.coord[n]
         if newext == None : newext = self.ext
-#        print "\n",n,self.resname[n],self.atom[n],self.resid[n],self.index[n],self.line[n],
         if newext == 'gro' : 
+            if self.ext == 'pdb' : 
+                coord = coord/10.
+            if resid in self.cterm : 
+                if resname[0] != "C" and len(resname) < 4 : 
+                    resname = "C%s"%resname
+            elif resid in self.nterm : 
+                if resname[0] != "N" and len(resname) < 4 : 
+                    resname = "N%s"%resname
+            elif len(resname) > 3 : 
+                resname = resname[1:]
             newline = "%5i%-5s%5s%5i%8.3f%8.3f%8.3f\n"%(resid,resname,atom,index,coord[0],coord[1],coord[2])
-#            print self.line[n],newline
             return newline
         elif newext == 'pdb' : 
             if self.ext == 'gro' : 
-                coord = coord*10
-#            print line[n],"0123456789 123456789 123456789 123456789 123456789 123456789 "
-            newline = "%-6s%5i %4s %-4s  %3i    %8.3f%8.3f%8.3f\n"%('ATOM',index,atom,resname,resid,coord[0],coord[1],coord[2])
+                coord = coord*10.
+            if len(resname) > 3 : 
+                resname = resname[1:]
+            newline = "%-6s%5i %4s %-4s  %3i    %8.3f%8.3f%8.3f%6.2f%6.2f\n"%('ATOM',index,atom,resname,resid,coord[0],coord[1],coord[2],1.,0.)
             return newline
         else : 
             printw('%s does not have a .gro or .pdb file type extension'%self.name)
@@ -672,7 +701,7 @@ class structure() :
                     coords.append(self.coord[i])
         return numpy.array(coords)
 
-def merge_structures(pose1, pose2, outname, residue1sel = [], residue2sel = [], new_cterm = False, position = 0 ) : 
+def merge_structures(pose1, pose2, outname, residue1sel = [], residue2sel = [], new_cterm = False, position = 0 ) :
     """
     Use new_nterm = True if you are adding residues to the n-terminus.
     For adding new chain, use new_cterm = True, as the new chain has a new c-terminus.
