@@ -2,22 +2,12 @@
 
 import numpy
 from math import pi, atan2, cos, sin, isnan
-import textwrap
-import os
-import sys
+from structure_apbs import *
+from fileUtilities import *
 
 maxwidth = 79
 
-def readFile( filename ) :
-    try :
-        File = open(filename)
-        FileLines = File.readlines()
-        File.close()
-    except : 
-        print "Cannot open %s, exiting"%filename
-#        sys.exit()
-        return 0
-    return FileLines
+
     
 class sidechains_2_change() : 
     def __init__(self, name=None,resid1=None, mutation1=None, resid2=None, mutation2=None) :
@@ -27,26 +17,6 @@ class sidechains_2_change() :
         self.resid2 = resid2
         self.mutation2 = mutation2
 
-def printbox( string ) : 
-    printw( "\n"+"-"*maxwidth )
-    printw("|"+" "*(maxwidth-2)+"|")
-    for line in textwrap.wrap(string,width=maxwidth-2) : 
-        printw("|"+line.center(maxwidth-2)+"|")
-    printw("|"+" "*(maxwidth-2)+"|")
-    printw( "-"*maxwidth +"\n")  
-    return True
-
-def printcenter( string ) : 
-    for line in textwrap.wrap(string,width=maxwidth) :    
-        printw(line.center(maxwidth))
-    return True
-    
-def printw( string ) : 
-    lines = string.split('\n')
-    for line in lines : 
-        print textwrap.fill(line,width=maxwidth)
-    return True
-        
 def pdb_coords( fileline ) :
     return numpy.array((float(fileline[30:38]),float(fileline[38:46]),float(fileline[46:54])))  
     
@@ -81,41 +51,6 @@ def gro_resname( fileline ) :
 def gro_atomname( fileline ) : 
     return fileline[11:15].split()[0]
  
-def backup_outname( filename ) : 
-    filename = os.path.abspath(filename)
-    basename = os.path.basename(filename)
-    dirname = os.path.dirname(filename)
-    copyname = filename
-    n = 1
-    if os.path.isfile(filename) : 
-        while os.path.isfile(copyname) : 
-            if n == 100 : 
-                printw( "Will no make 100 copies of %s, exiting..."%filename )
-                return 
-            copyname = "%s/#%s.%i#"%(dirname,basename,n)
-            n += 1
-        os.rename(filename, copyname)
-        printbox( "Backing up %s to %s"%(filename,copyname))
-    return filename
-    
-def isFile( name ) : 
-    if not os.path.isfile(name) : 
-        printw("\n>>%s not found, exiting<<\n"%name)
-        return False
-#        sys.exit()
-    return True
-
-def writeLines( name, newlines ) :
-    if len(name) > 1054 : 
-        printw("The name is REALLY long!  You probably put the line string there by mistake.  Edit the code if you want this to work...")
-        return 0
-    backup_outname( name )
-    File = open(name,"w")
-    File.write(newlines)
-    File.close()   
-    printw("\n>> Done Writing %s <<\n"%name)
-    return name
-
 def pdb_name( filename ) : 
     filename = os.path.abspath(filename)
     if filename[:-4] != '.pdb' and '.' in filename : 
@@ -147,7 +82,7 @@ def run_tleap( inname, outname ) :
     deffnm, top, itp, tpr = gmx_input_names( outname )
     if '.gro' in inname : 
         printw("Must use a .pdb file for tleap!")
-        #sys.exit()
+        sys.exit()
         return None
     cmd += 'tleap -f leaprc.ff03CNC -f %s;\n'%leapin
     cmd += 'echo 1 | pdb2gmx -f %s -o %s -water None -ignh -merge all -p %s -i %s;\n'%(outname,gro_name(outname),top,itp)
@@ -157,26 +92,33 @@ def run_tleap( inname, outname ) :
         return gro_name(outname)
     return None
 
-def minimize( structure, mdp, ndx = None, rerun = False ) : 
-    if isFile(structure) and isFile(mdp) : 
-        deffnm, top, itp, tpr = gmx_input_names(structure)
-        deffnm += '.min'
+def minimize( structure, mdp, ndx = None, rerun = False, ignh = True ) :
+    ignh_string = "-ignh"
+    if not ignh :
+        ignh_string = ""
+    deffnm, top, itp, tpr = gmx_input_names(structure)
+    deffnm += '.min'
+    outgro = '%s.gro'%deffnm
+    if isFile(structure) and isFile(mdp) :
         tmpname = "%s/pdb2gmx.%s"%(os.path.dirname(structure),os.path.basename(structure))
-        cmd = 'echo 1 | pdb2gmx -f %s -o %s -water None -ignh -merge all -p %s -i %s;\n'%(structure,tmpname,top,itp)
+        cmd = 'echo 1 | pdb2gmx -f %s -o %s -water None -merge all -p %s -i %s %s;\n'%(structure,tmpname,top,itp,ignh_string)
         if ndx != None : 
             cmd += 'genrestr -n %s -o %s -f %s;\n'%(ndx,itp,tmpname)
-        cmd += 'grompp -f %s -o %s -c %s -p %s;\n '%(mdp,tpr,tmpname,top)
-        cmd += 'mdrun -s %s -deffnm %s;\n'%(tpr,deffnm)
-        outgro = '%s.gro'%deffnm
-        print deffnm,outgro, isFile(outgro)
-        if not isFile(outgro) or rerun :
+        os.system(cmd)
+        if isFile(top) and isFile(tmpname) :
+            cmd = 'grompp -f %s -o %s -c %s -p %s;\n '%(mdp,tpr,tmpname,top)
             os.system(cmd)
-        if isFile(outgro) : 
-            return outgro
-    else : 
-        s="Structure file "+isFile(Structure)+" and mdp file "+isFile(mdp)
-        printw(s)
-    return None
+        if isFile(tpr) :
+            cmd = 'mdrun -s %s -deffnm %s;\n'%(tpr,deffnm)
+            print deffnm,outgro, isFile(outgro)
+            if not isFile(outgro) or rerun :
+                os.system(cmd)
+            if isFile(outgro) :
+                return (outgro,tpr,top)
+            else :
+                s="Structure file "+isFile(Structure)+" and mdp file "+isFile(mdp)
+                printw(s)
+    return (outgro,tpr,top)
 
 def outdated_align_sequence( a, b ) : 
     """
@@ -356,8 +298,10 @@ def kabsch_alignment( pose1, pose2 , pose1sel = [], pose2sel = [] ):
     for i in range(pose2.natoms) : 
         pose2.coord[i]=stsel2[i]
     
-    pose1name = pose1.name.replace('.%s'%pose1.ext,'.fit.%s'%pose1.ext)
-    pose2name = pose2.name.replace('.%s'%pose2.ext,'.fit.%s'%pose2.ext)
+    pose1base = os.path.basename(pose1.name.replace('.%s'%pose1.ext,''))
+    pose2base = os.path.basename(pose2.name.replace('.%s'%pose2.ext,''))
+    pose1name = pose1.name.replace('.%s'%pose1.ext,'.fit2.%s.%s'%(pose2base,pose1.ext))
+    pose2name = pose2.name.replace('.%s'%pose2.ext,'.fit2.%s.%s'%(pose1base,pose2.ext))
     backup_outname(pose1name)
     backup_outname(pose2name)
     pose1.write_gro(pose1name)
@@ -438,7 +382,7 @@ class structure() :
                 else : 
                     printw('%s does not have a .gro or .pdb file type extension'%self.name)
                     break
-    #                sys.exit()
+                    sys.exit()
                 if self.natoms > 1 and self.resid[self.natoms-2] != self.resid[self.natoms-1] : 
                     self.sequence.append(self.resname[self.natoms-1])
                 elif self.natoms == 1 : 
@@ -533,8 +477,9 @@ class structure() :
             printw("Both ends of the dihedral definition atom are in the index to-be rotated.  Only 1 should be present...")
             return False
         angle = ( new_dihedral - cur_dih )*(pi/180)
-        s = sin( -angle ) 
-        c = cos( -angle )
+        printbox("From %.3f to %.3f by %.3f"%(cur_dih,new_dihedral,angle*180/pi))
+        s = sin( angle )
+        c = cos( angle )
         if 0 in index : 
             index.remove(0)
         index = numpy.array(index) - 1
@@ -648,13 +593,16 @@ class structure() :
             if i in self.writeIndex : 
                 self.writeIndex.remove(i)
         
-    def write_gro(self,filename) : 
+    def write_gro(self,filename, maxresnum = []) :
+        if not maxresnum :
+            maxresnum = 2*self.natoms # in case atoms have been added for some reason
         filename = gro_name(filename)
         backup_outname(filename)
         filelines = self.groHeader
         filelines += " %i\n"%len(self.writeIndex)
-        for i in self.writeIndex : 
-            filelines += self.newline(i,newext='gro')
+        for i in self.writeIndex :
+            if self.resid[i] <= maxresnum :
+                filelines += self.newline(i,newext='gro')
         filelines += self.groFooter
         file = open(filename,'w')
         file.write(filelines)
@@ -662,16 +610,19 @@ class structure() :
         printw("Done writing structure to %s"%filename)
         return filename
     
-    def write_pdb(self,filename):
+    def write_pdb(self,filename, maxresnum = []):
         """--ALWAYS-- use pdb2gmx -ignh or tleap on these pdb fies!!"""
+        if not maxresnum :
+            maxresnum = 2*self.natoms # in case atoms have been added for some reason
         filename = pdb_name(filename)
         backup_outname(filename) 
         filelines = "TITLE\t%s\n"%filename
-        for i in self.writeIndex : 
-            if self.atom[i][0] != "H" : 
-                filelines += self.newline(i,newext='pdb')
-            if self.atom[i] == 'OC2' : 
-				filelines += 'TER\n'
+        for i in self.writeIndex :
+            if self.resid[i] <= maxresnum :
+                if self.atom[i][0] != "H" :
+                    filelines += self.newline(i,newext='pdb')
+                if self.atom[i] == 'OC2' :
+                    filelines += 'TER\n'
         filelines += "TER\nENDMDL"
         file = open(filename,'w')
         file.write(filelines)
@@ -947,4 +898,28 @@ def align_sequence( struct1, struct2, gscore=-3, match_HIS2HIx = True ) :
                 start = l+1
                 break
     return aligned_struct1, aligned_struct2, struct1_resids, struct2_resids
+
+def setup_nitrile_dih_rotation( structure, chi = 1) :
+    dih_ndx = []
+    rotation_ndx = []
+    if chi == 1 :
+        x_dih = [ 'N', 'CA', 'CB', 'SG' ]
+        x_rot = [ 'HB1', 'HB2', 'SG', 'CD', 'NE' ]
+    elif chi == 2 :
+        x_dih = [ 'CA', 'CB', 'SG', 'CD' ]
+        x_rot = [ 'CD', 'NE']
+    else :
+        printw("ERROR, chi %i was selected for CNC.  We can only do chi 1 and chi 2!"%chi)
+        sys.exit()
+    for i in range(structure.natoms) :
+        if structure.resname[i] == 'CNC' :
+            if structure.atom[i] in x_dih :
+                dih_ndx.append(structure.index[i])
+            if structure.atom[i] in x_rot :
+                rotation_ndx.append(structure.index[i])
+    if len(dih_ndx) == 4 :
+        return dih_ndx,rotation_ndx
+    else :
+        printw("Too many atoms in the dihedral! Exiting...")
+        sys.exit()
 
