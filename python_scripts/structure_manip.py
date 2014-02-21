@@ -92,7 +92,7 @@ def run_tleap( inname, outname ) :
         return gro_name(outname)
     return None
 
-def minimize( structure, mdp, ndx = None, rerun = False, ignh = True ) :
+def minimize( structure, mdp, ndx = None, rerun = False, ignh = True, dihres = False ) :
     ignh_string = "-ignh"
     if not ignh :
         ignh_string = ""
@@ -101,24 +101,55 @@ def minimize( structure, mdp, ndx = None, rerun = False, ignh = True ) :
     outgro = '%s.gro'%deffnm
     if isFile(structure) and isFile(mdp) :
         tmpname = "%s/pdb2gmx.%s"%(os.path.dirname(structure),os.path.basename(structure))
-        cmd = 'echo 1 | pdb2gmx -f %s -o %s -water None -merge all -p %s -i %s %s;\n'%(structure,tmpname,top,itp,ignh_string)
-        if ndx != None : 
-            cmd += 'genrestr -n %s -o %s -f %s;\n'%(ndx,itp,tmpname)
-        os.system(cmd)
-        if isFile(top) and isFile(tmpname) :
-            cmd = 'grompp -f %s -o %s -c %s -p %s;\n '%(mdp,tpr,tmpname,top)
+        if not isFile(top) or not isFile(tmpname) or rerun :
+            cmd = 'echo 1 | pdb2gmx -f %s -o %s -water None -merge all -p %s -i %s %s;\n'%(structure,tmpname,top,itp,ignh_string)
+            if ndx != None :
+                cmd += 'genrestr -n %s -o %s -f %s;\n'%(ndx,itp,tmpname)
             os.system(cmd)
+        if isFile(top) and isFile(tmpname) :
+            if dihres :
+                newlines = ""
+                hasDih = False
+                lines = readFile(top)
+                for line in lines :
+                    if "; Include Position restraint file" in line :
+                        newlines += dihres
+                        hasDih = True
+                    newlines += line
+                if not hasDih :
+                    printbox( "Dihedral restraint not added...")
+                    sys.exit()
+                writeLines(top,newlines)
+            if not isFile(tpr) or rerun :
+                cmd = 'grompp -f %s -o %s -c %s -p %s;\n '%(mdp,tpr,tmpname,top)
+                os.system(cmd)
         if isFile(tpr) :
             cmd = 'mdrun -s %s -deffnm %s;\n'%(tpr,deffnm)
-            print deffnm,outgro, isFile(outgro)
             if not isFile(outgro) or rerun :
                 os.system(cmd)
-            if isFile(outgro) :
+            if isFile(outgro,kill=True) :
                 return (outgro,tpr,top)
             else :
                 s="Structure file "+isFile(Structure)+" and mdp file "+isFile(mdp)
                 printw(s)
     return (outgro,tpr,top)
+
+def mdEnergy( gro, trr, top, mdp, rerun = False) :
+    deffnm = nameExt(gro,'.rerun')
+    if not isFile("%s.tpr"%deffnm) or rerun :
+        cmd = "grompp -f %s -po %s -c %s -t %s -p %s -o %s;\n"%(mdp,deffnm,gro,trr,top,deffnm)
+        os.system(cmd)
+    if isFile("%s.tpr"%deffnm) :
+        if not isFile("%s.edr"%deffnm) :
+            cmd = "mdrun -s %s -rerun %s -deffnm %s -maxh 0.05;\n"%(deffnm,gro,deffnm)
+            os.system(cmd)
+        if isFile("%s.edr"%deffnm) :
+            cmd = "echo Potential | g_energy -o %s -f %s -xvg none;\n"%(deffnm,deffnm)
+            os.system(cmd)
+    line = readFile("%s.xvg"%deffnm)[0]
+    energy = float(line.split()[1])
+    return (deffnm,energy)
+    
 
 def outdated_align_sequence( a, b ) : 
     """

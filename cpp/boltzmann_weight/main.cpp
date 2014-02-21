@@ -31,7 +31,9 @@ int main(int argc, char * argv[])
     parser.add_booloption("-b",\
                           "Do bootstrapping",\
                           false);
-
+    parser.add_booloption("-s",\
+                      "Use random seed for bootstrapping, otherwise will seed with 47.",\
+                      true);
                        
 	parser.parse_args();
 	std::string probfile = parser.Options()[0];
@@ -43,6 +45,7 @@ int main(int argc, char * argv[])
     std::stringstream linestream(donsteps);
     linestream >> nsteps;
     bool doBootstrapping = parser.boolOptions()[1];
+    bool useRandSeed = parser.boolOptions()[2];
 
 	Probability probability;
 	probability.ReadProb( probfile );
@@ -59,7 +62,7 @@ int main(int argc, char * argv[])
     bw = stats.BoltzmannAverage();
     if (doBootstrapping)
     {
-        stats.bootstrap(nsteps);
+        stats.bootstrap(nsteps,useRandSeed);
     bs = stats.BootstrapAverage();
     }
     //Write output

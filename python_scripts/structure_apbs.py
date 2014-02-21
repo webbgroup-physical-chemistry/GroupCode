@@ -64,7 +64,7 @@ elec \n\
     temp 300.0 \n\
     calcenergy total \n\
     calcforce no \n\
-    write atompot flat OUTPUT \n\
+    write pot dx OUTPUT \n\
 end \n"
 
 def makeXYZ( trr, tpr, top, ndx, out, parm) :
@@ -101,7 +101,10 @@ def makeAPBSin( pqr, pdie, sdie=78 ) :
     lines = readFile(pqr)
     haveCD = False
     haveNE = False
+    nDUM = 0
     for line in lines :
+        if "DUM" in line :
+            nDUM += 1
         if "CNC" in line :
             l=line.split()
             if l[2] == "CD" :
@@ -114,37 +117,60 @@ def makeAPBSin( pqr, pdie, sdie=78 ) :
             break
     midpoint = cd/2. + ne/2.
     bondlength = numpy.linalg.norm(ne-cd)
+    do0 = True
+    do1 = True
     # Configure file names for SDIE != PDIE
     inputname0 = nameExt(pqr,'.%d.in'%sdie)
-    epot = nameExt(pqr,'.%d_pot'%sdie)
-    atompot = nameExt(pqr,'.%d_atompot'%sdie)
+    epot = os.path.basename(nameExt(pqr,'.%d_pot'%sdie))
+    atompot0 = os.path.basename(nameExt(pqr,'.%d'%sdie))
+    if os.path.exists('%s.dx'%atompot0) : do0 = False
     # Boundary condition template for SDIE != PDIE
-    inputstring = bctemplate.replace("PQRNAME",pqr)
+    inputstring = bctemplate.replace("PQRNAME",os.path.basename(pqr))
     # template for SDIE != PDIE
     inputstring += template.replace("CDCOORD","%8.3f %8.3f %8.3f"%tuple(midpoint))
     inputstring = inputstring.replace("SDIE","%d"%sdie)
     inputstring = inputstring.replace("PDIE","%d"%pdie)
-    inputstring = inputstring.replace("OUTPUT","%s"%atompot)
+    inputstring = inputstring.replace("OUTPUT","%s"%atompot0)
     inputstring += "\nquit\n"
     writeLines(inputname0,inputstring)
     # Configure file names for SDIE == PDIE
     inputname1 = nameExt(pqr,'.%d.in'%pdie)
-    epot = nameExt(pqr,'.%d_pot'%pdie)
-    atompot = nameExt(pqr,'.%d_atompot'%pdie)
+    epot = os.path.basename(nameExt(pqr,'.%d_pot'%pdie))
+    atompot1 = os.path.basename(nameExt(pqr,'.%d'%pdie))
+    if os.path.exists('%s.dx'%atompot1) : do1 = False
     # Boundary condition template for SDIE != PDIE
-    inputstring = bctemplate.replace("PQRNAME",pqr)
+    inputstring = bctemplate.replace("PQRNAME",os.path.basename(pqr))
     # template for SDIE != PDIE
     inputstring += template.replace("CDCOORD","%8.3f %8.3f %8.3f"%tuple(midpoint))
     inputstring = inputstring.replace("SDIE","%d"%pdie)
     inputstring = inputstring.replace("PDIE","%d"%pdie)
-    inputstring = inputstring.replace("OUTPUT","%s"%atompot)
+    inputstring = inputstring.replace("OUTPUT","%s"%atompot1)
     inputstring += "\nquit\n"
     writeLines(inputname1,inputstring)
-    do0 = True
-    do1 = True
-    if os.path.exists(inputname0) : do0 = True
-    if os.path.exists(inputname1) : do1 = True
-    return (inputname0,inputname1),(do0,do1)
+    return (inputname0,inputname1),(do0,do1),bondlength,nDUM,("%s.dx"%atompot0,"%s.dx"%atompot1)
+
+def extractField(outputs,bondlength,nDUM) :
+    outname = outputs[0].replace("78_atompot.txt","field-err.xvg")
+    for output in outputs :
+        lines = readFile(output)[4:nDUM+4]
+        pot = []
+        for line in lines :
+            pot.append(float(line))
+        m1 = int(numpy.ceil((nDUM-1)/2-1))
+        m2 = int(numpy.ceil((nDUM-1)/2))
+        m3 = int(numpy.floor((nDUM-1)/2))
+        m4 = int(numpy.floor((nDUM-1)/2+1))
+        if "78_atompot" in output :
+            field78 = (pot[m1]-pot[m2])/(bondlength/(nDUM-1))/2 + \
+                (pot[m3]-pot[m4])/(bondlength/(nDUM-1))/2
+            outname = output.replace("78_atompot.txt","f78-f1-rf.xvg")
+        elif "1_atompot" in output :
+            field1 = (pot[m1]-pot[m2])/(bondlength/(nDUM-1))/2 + \
+                      (pot[m3]-pot[m4])/(bondlength/(nDUM-1))/2
+    fields = [ field78, field1, field78-field1 ]
+    string = "%20.6e %20.6e %20.6e\n"%(field78,field1,field78-field1)
+    writeLines(outname,string)
+    return fields
 
 def nameExt( filename, ext ) :
     if ext.startswith('.') :
@@ -156,7 +182,7 @@ def nameExt( filename, ext ) :
         return filename+'.%s'%ext
     return filename
 
-def makeAPBScoords( trr, tpr, top, ndx, out, pdie=1, parm="/Users/ritchie/Desktop/tmp_amoeba/amoeba.prm", dat="/Users/ritchie/Utilities/apbs/AMBER.DAT" ) :
+def makeAPBScoords( trr, tpr, top, ndx, out, pdie=1, parm="/Users/ritchie/Desktop/tmp_amoeba/amoeba.prm", dat="/Users/ritchie/Utilities/apbs/AMBER.DAT", rerun = False ) :
     # Since the box is a grid, being consistent about how the protein is oriented
     # is probably a good idea.
     if ".gro" in trr or ".pdb" in trr :
@@ -168,10 +194,10 @@ def makeAPBScoords( trr, tpr, top, ndx, out, pdie=1, parm="/Users/ritchie/Deskto
     xyznames = makeXYZ( trr, tpr, top, ndx, xyzname, parm )
     pqrnames = makePQR( trr, tpr, top, ndx, pqrname, xvgname, pdie, dat )
     for pqr in pqrnames :
-        input,missing = makeAPBSin(pqr,pdie)
-        for i in range(len(inputs)) :
-            if missing[i] :
-                cmd="apbs %s"%input[i]
-                os.system(cmd)
-
+        input,missing,bondlength,nDUM,output = makeAPBSin(pqr,pdie)
+#        for i in range(len(input)) :
+#            if missing[i] or rerun :
+#                cmd="apbs %s"%input[i]
+#                os.system(cmd)
+#        extractField(output,bondlength,nDUM)
 

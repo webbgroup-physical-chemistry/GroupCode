@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-I. -O -std=c++0x 
+CFLAGS=-O3 -I. -std=c++0x   
 DEPS = MyOptionParser.h prob.h
 OBJ = main.o MyOptionParser.o prob.o
 

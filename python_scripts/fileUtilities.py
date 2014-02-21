@@ -6,14 +6,16 @@ import textwrap
 
 maxwidth = 79
 
-def readFile( filename ) :
+def readFile( filename, kill=True ) :
     try :
         File = open(filename)
         FileLines = File.readlines()
         File.close()
     except :
-        print "Cannot open %s, exiting"%filename
-        sys.exit()
+        print "Cannot open %s"%filename
+        if kill :
+            print "EXITING..."
+            sys.exit()
         return 0
     return FileLines
 
@@ -54,10 +56,13 @@ def backup_outname( filename ) :
         printbox( "Backing up %s to %s"%(filename,copyname))
     return filename
 
-def isFile( name ) :
+def isFile( name, kill=False ) :
     if not os.path.isfile(name) :
-        printw("\n>>%s not found, exiting<<\n"%name)
-        return False
+        print "\n>>%s not found<<\n"%name
+        if kill :
+            print "EXITING..."
+            sys.exit()
+        else : return False
     return True
 
 def writeLines( name, newlines ) :

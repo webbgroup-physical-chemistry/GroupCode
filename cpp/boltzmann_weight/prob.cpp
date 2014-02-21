@@ -269,7 +269,7 @@ average Stats::angleAverage(experiment frame)
         // Var ranges from 0 to 1.
         // To make this analogous to angle, I should multiply by 360
         // rather than 180/pi, because this result is not a radian.
-        // I knew the old variances looked too high...
+        // I knew the old variances looked too small...
         r = sqrt(x*x + y*y);
         variance = (1.-r)*360.;
         std = sqrt(variance);
@@ -300,10 +300,13 @@ average Stats::linearAverage(experiment frame)
         for (int j=0; j<frame.dat.size(); j++)
         {
             total += frame.dat[j][i] * frame.prob[j] * inverseProbSum;
-            vartotal += frame.dat[j][i] * frame.dat[j][i] * frame.prob[j] * inverseProbSum;
             sum += frame.prob[j];
         }
-        double std = sqrt(vartotal - total*total);
+        for (int j=0; j<frame.dat.size(); j++)
+        {
+            vartotal += frame.prob[j] * inverseProbSum * frame.dat[j][i] * ( frame.dat[j][i] - total);
+        }
+        double std = sqrt(vartotal);
         result.avg.push_back(total);
         result.std.push_back(std);
     }
@@ -363,10 +366,14 @@ void Stats::resampleAverage()
     return;
 };
 
-void Stats::bootstrap(int nresamples)
+void Stats::bootstrap(int nresamples, bool useRandSeed)
 {
     // Initiate random seed
-    int seed = time(NULL);
+    int seed = 47;
+    if (useRandSeed)
+    {
+        seed = time(NULL);
+    }
     std::cout << "Performing " << nresamples << " resampling experiments using seed: " << seed << std::endl;
     srand(seed);
     for (int i=0; i<nresamples; i++) 
@@ -477,16 +484,22 @@ void WriteOutputs::write( std::string outfile, std::string probfile, average bol
     {
         outputfile << i << " : " << std::setw(29-ndigits) << "bootstrapping(";
         outputfile << nsteps << ")";
-        outputfile << std::setw(15) << " avg/std ";
+        outputfile << std::setw(15) << " avg/ste ";
         outputfile << std::setw(15) << std::setprecision(10) << bootstrap.avg[i];
-        outputfile << std::setw(15) << std::setprecision(10) << bootstrap.std[i];
+        outputfile << std::setw(15) << std::setprecision(10) << bootstrap.std[i]/sqrt(nsteps);
         outputfile << "\n";
         std::cout << i << " : " << std::setw(29-ndigits) << "bootstrapping(";
         std::cout << nsteps << ")";
-        std::cout << std::setw(15) << " avg/std ";
+        std::cout << std::setw(15) << " avg/ste ";
         std::cout << std::setw(15) << std::setprecision(10) << bootstrap.avg[i];
-        std::cout << std::setw(15) << std::setprecision(10) << bootstrap.std[i];
+        std::cout << std::setw(15) << std::setprecision(10) << bootstrap.std[i]/sqrt(nsteps);
         std::cout << "\n";
+        /*
+        std::cout << "\t99% likely for real value to be between ";
+        std::cout << bootstrap.avg[i] - 2.5 * bootstrap.std[i]/sqrt(nsteps);
+        std::cout << " and " << bootstrap.avg[i] + 2.5 * bootstrap.std[i]/sqrt(nsteps);
+        std::cout << "\n";
+         */
     }
     outputfile.close();
 }

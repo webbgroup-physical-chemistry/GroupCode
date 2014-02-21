@@ -83,7 +83,7 @@ public:
     average BoltzmannAverage();
     average BootstrapAverage();
     void resampleAverage();
-    void bootstrap(int nresamples = 10000);
+    void bootstrap(int nresamples = 10000, bool useRandSeed = true);
     void addFrame(experiment addframe,bool angle = false);
 };  
 
