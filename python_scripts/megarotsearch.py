@@ -25,6 +25,7 @@ parser.add_option("-c",\
                   "--fix",\
                   dest="fix_zero",\
                   default=True,\
+                  action="store_false",\
                   help="Fix it so strucutre <groname>-0.gro has a dihedral of 0"\
                   )
 parser.add_option("-x",\
@@ -238,6 +239,7 @@ for rotdegrees in range(0,360,rotstep) :
         #print rotdegrees
         distances = []
         angle = (degree_shift-dihedral)*(pi/180) # convert to radians
+        print degree_shift, dihedral, angle*180/pi
         s = sin( angle )
         c = cos( angle )
         rotmat = [ [ ux2 + (1-ux2)*c, uxuy*(1-c) - uz*s, uxuz*(1-c)+uy*s ],
