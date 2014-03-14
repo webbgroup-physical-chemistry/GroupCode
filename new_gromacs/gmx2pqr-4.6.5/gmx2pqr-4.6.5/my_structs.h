@@ -11,8 +11,21 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #endif
+
+
+#ifndef MPI
+#define MPI 4*atan(1)
+#endif
+
+#define eps0 8.8541878e-12 //Vacuum permittivity C^2 s^2 /(kg m^3)
+#define ec 1.6021773e-19 // Coulombs/e-
+#define NA 6.0221367e23 // Avogadro's number, molecules/mol
+#define kb 1.3806581e-23 // J/K
+
+
 
 typedef struct gmx2amb gmx2amb;
 typedef struct gmx2amb_dat gmx2amb_dat;

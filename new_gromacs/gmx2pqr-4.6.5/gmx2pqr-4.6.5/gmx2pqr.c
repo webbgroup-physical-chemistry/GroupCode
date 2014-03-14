@@ -26,7 +26,6 @@
 #include "string.h"
 #include "stdlib.h"
 
-#include <math.h>
 #include <stdio.h>
 #include "my_structs.h"
 
@@ -40,10 +39,10 @@ double calculate_field( int istart, int iend, t_topology top, t_trxframe fr, rve
 {
     double field[3],xyz[3];
     double r2, r, rr3, pfield=0;
-    double permitivity_constant = 35950207149.4727056;
-    double coulombs = 6.2415096516E18;
-    double kbt = 298 * 1.380648813e-23;
-    double cfac = 2.5e9 * permitivity_constant / ( coulombs * coulombs * kbt );
+    double scale = ec/(4*MPI*eps0*1e-10); // kg m^2 A / (e- C s^2)
+    double zmagic = ec*NA*1.e-3;  // C kJ/(e- mol J)
+    double kbT = kb*300*NA*1.e-3;  // kJ/mol/kbT(300)
+    double cfac = scale*zmagic/kbT ; // kbT/(e- A)
     for (int i=0;i<3;i++) { field[i] = 0; }
     
     //    fprintf(stderr,"\n%.4f %.4f %.4f",midpoint[0],midpoint[1],midpoint[2]);
@@ -56,19 +55,20 @@ double calculate_field( int istart, int iend, t_topology top, t_trxframe fr, rve
         //        fprintf(stderr,"%.4f %.4f %.4f\n",xyz[0],xyz[1],xyz[2]);
         r2 = dot(xyz,xyz);
         r = pow(r2,.5);
+        if ( r2 > 0.0000001 ) {
         rr3 = 1.0 / ( r * r2 );
-        for (int j=0;j<3;j++) {
-            field[j] += rr3 * top.atoms.atom[i].q * xyz[j];
+            for (int j=0;j<3;j++) {
+                field[j] += rr3 * top.atoms.atom[i].q * xyz[j];
+            }
         }
     }
-    
     // Project the field along the bond vector
     for (int i=0;i<3;i++) {
-        //        fprintf(stderr,"%.4f ",field[i]);
+        //fprintf(stderr,"%.4f ",field[i]);
         pfield += field[i]*bondvector[i]/bondlength;
     }
     pfield *= cfac;
-    //    fprintf(stderr,"\n%.4f\n",pfield);
+        //fprintf(stderr,"\n%.8e\n",pfield);
     return pfield;
 }
 

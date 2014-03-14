@@ -1,0 +1,4 @@
+0 :          test/probability.prob       avg/std    -3.191171315    7.654839155
+1 :          test/probability.prob       avg/std     134.0472711    16.08407511
+0 :            bootstrapping(1000)       avg/ste    -3.170180599 0.005556108442
+1 :            bootstrapping(1000)       avg/ste     134.1453487  0.02708628889

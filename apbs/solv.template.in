@@ -1,0 +1,54 @@
+
+read 
+    mol pqr PQRNAME 
+end 
+
+# Solvation Energy - SOLVATED STATE 
+elec name solv 
+    mg-manual 
+    dime DIME 
+    glen GLEN 
+    gcent mol 1 
+    mol 1 
+    lpbe 
+    bcfl mdh 
+    ion charge 1 conc CONC radius 2.0 
+    ion charge -1 conc CONC radius 1.0 
+    pdie PDIE 
+    sdie SDIE 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    swin 0.3 
+    temp TEMP 
+    calcenergy total 
+    calcforce no 
+end 
+
+# Solvation Energy - REFERENCE STATE 
+elec name ref  
+    mg-manual 
+    dime DIME 
+    glen GLEN 
+    gcent mol 1 
+    mol 1 
+    lpbe 
+    bcfl mdh 
+    ion charge 1 conc 0.0 radius 2.0 
+    ion charge -1 conc 0.0 radius 1.0 
+    pdie PDIE 
+    sdie PDIE 
+    chgm spl2 
+    srfm mol 
+    srad 1.4 
+    sdens 10.0 
+    swin 0.3 
+    temp TEMP 
+    calcenergy total 
+    calcforce no 
+end 
+
+# Solvation energy 
+print elecEnergy solv - ref end 
+quit

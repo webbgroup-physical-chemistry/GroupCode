@@ -19,7 +19,7 @@ typedef std::vector< std::vector<std::string> > DatList;
 
 struct experiment
 {
-    Matrix dat;
+    std::vector< std::vector<double> >  dat;
     std::vector<double> prob;
     std::vector<int> bin;
 };
@@ -51,9 +51,9 @@ public:
 
 class Dats
 {
-	Matrix dat;
+    std::vector< std::vector<double> > dat;
 public:
-	Matrix Dat();	
+	std::vector< std::vector<double> > Dat();	
 	void ReadDat( std::string & filename );
     void clear();
 };
@@ -84,7 +84,7 @@ public:
     average BootstrapAverage();
     void resampleAverage();
     void bootstrap(int nresamples = 10000, bool useRandSeed = true);
-    void addFrame(experiment addframe,bool angle = false);
+    void addFrame(experiment addframe, bool angle = false);
 };  
 
 class WriteOutputs

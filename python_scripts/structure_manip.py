@@ -32,9 +32,11 @@ def pdb_resname( fileline ) :
 def pdb_atomname( fileline ) : 
     return fileline[12:16].split()[0]
 
-def gro_coords( fileline ) : 
-    l = fileline.split()[-3:]
-    return numpy.array((float(l[0]),float(l[1]),float(l[2])))
+def gro_coords( fileline ) :
+    x=float(fileline[20:28])
+    y=float(fileline[28:36])
+    z=float(fileline[36:44])
+    return numpy.array((x,y,z))
     
 def gro_resid( fileline ) : 
     return int(fileline[0:5].split()[0])

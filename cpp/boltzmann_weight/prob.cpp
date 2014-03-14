@@ -101,12 +101,27 @@ void Dats::ReadDat( std::string & filename )
 				std::stringstream linestream(line);
 				while (linestream >> n) 
 				{
-					values.push_back(n);	
-                    ncol++;
+                    std::stringstream value;
+                    value >> n;
+                    if (!value.good())
+                    {
+					    values.push_back(n);	
+                        ncol++;
+                    }
 				}
-				dat.push_back(values);
-                nlines++;
-				values.clear();
+                values.shrink_to_fit();
+                if (values.size() > 0 )
+                {
+				    dat.push_back(values);
+                    nlines++;
+				    values.clear();
+                }
+                else 
+                {
+                    std::cout << "Not a number found on line " << nlines+1 << ".  Exiting..." << std::endl;
+                    std::cout << line << std::endl;
+                    exit(1);
+                }
 			}
 		}
 	}
@@ -163,7 +178,7 @@ void Lists::ReadListInputs()
     Bins bini;
     Dats dati;
     std::vector<int> bin;
-    Matrix dat;
+    std::vector< std::vector<double> > dat;
     for (int i=0;i<list.size();i++)
     {
         
@@ -190,6 +205,8 @@ void Lists::ReadListInputs()
             exit(1);
         }
     }
+    frame.dat.shrink_to_fit();
+    frame.bin.shrink_to_fit();
     return;
 };
 
@@ -240,6 +257,7 @@ void Lists::FrameProb(Probability probability)
         }
     }
     delete [] binprobs;
+    frame.prob.shrink_to_fit();
     return;
 }
 
@@ -468,6 +486,20 @@ void WriteOutputs::write( std::string outfile, std::string probfile, average bol
     outputfile.open(outfile.c_str());
     for (int i=0; i<boltzmann.avg.size() ; i++)
     {
+        outputfile << i << " : " << probfile;
+        outputfile << " avg/std ";
+        outputfile << boltzmann.avg[i] << " ";
+        outputfile << boltzmann.std[i];
+        outputfile << "\n";
+        
+        std::cout << i << " : " << probfile;
+        std::cout << " avg/std ";
+        std::cout << boltzmann.avg[i] << " ";
+        std::cout << boltzmann.std[i];
+        std::cout << "\n";
+    
+        // This has problems with scientific notation
+        /*
         outputfile << i << " : " << std::setw(30) << probfile;
         outputfile << std::setw(15) << " avg/std ";
         outputfile << std::setw(15) << std::setprecision(10) << boltzmann.avg[i];
@@ -478,10 +510,20 @@ void WriteOutputs::write( std::string outfile, std::string probfile, average bol
         std::cout << std::setw(15) << std::setprecision(10) << boltzmann.avg[i];
         std::cout << std::setw(15) << std::setprecision(10) << boltzmann.std[i];
         std::cout << "\n";
+        */
     }
     int ndigits = log10(nsteps)+1;
     for (int i=0; i<bootstrap.avg.size() ; i++)
     {
+        outputfile << i << " : " << "bootstrapping(" << nsteps << ") avg/ste ";
+        outputfile << bootstrap.avg[i] << " ";
+        outputfile << bootstrap.std[i]/sqrt(nsteps) << "\n";
+        
+        std::cout << i << " : " << "bootstrapping(" << nsteps << ") avg/ste ";
+        std::cout << bootstrap.avg[i] << " ";
+        std::cout << bootstrap.std[i]/sqrt(nsteps) << "\n";
+        
+        /*
         outputfile << i << " : " << std::setw(29-ndigits) << "bootstrapping(";
         outputfile << nsteps << ")";
         outputfile << std::setw(15) << " avg/ste ";
@@ -494,6 +536,7 @@ void WriteOutputs::write( std::string outfile, std::string probfile, average bol
         std::cout << std::setw(15) << std::setprecision(10) << bootstrap.avg[i];
         std::cout << std::setw(15) << std::setprecision(10) << bootstrap.std[i]/sqrt(nsteps);
         std::cout << "\n";
+        */
         /*
         std::cout << "\t99% likely for real value to be between ";
         std::cout << bootstrap.avg[i] - 2.5 * bootstrap.std[i]/sqrt(nsteps);
