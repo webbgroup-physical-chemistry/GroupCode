@@ -1,4 +1,4 @@
-#! /usr/local/bin/python
+#! /anaconda/bin/python
 
 import numpy
 from math import pi, atan2, cos, sin, isnan

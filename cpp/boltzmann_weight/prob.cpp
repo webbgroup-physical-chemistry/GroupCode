@@ -447,7 +447,14 @@ void WriteOutputs::extension( std::string basename, std::string suffix, std::str
 bool WriteOutputs::fexists( std::string filename )
 {
 	std::ifstream file (filename.c_str());
-    return file;
+    if (file.good()) {
+        file.close();
+        return true;
+    }
+    else {
+        file.close();
+        return false;
+    }
 }
 
 void WriteOutputs::backup( std::string filename )
