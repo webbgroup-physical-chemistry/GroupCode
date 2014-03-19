@@ -1,0 +1,57 @@
+;
+;	File '1LFD.top' was generated
+;	By user: ritchie (501)
+;	On host: 4312-ce644.cm.utexas.edu
+;	At date: Tue Mar 18 14:55:23 2014
+;
+;	This is a standalone topology file
+;
+;	It was generated using program:
+;	pdb2gmx - VERSION 4.6.5
+;
+;	Command line was:
+;	pdb2gmx -f 1LFD.pdb -o 1LFD.gro -water tip3p -p 1LFD -i 1LFD 
+;
+;	Force field was read from the standard Gromacs share directory.
+;
+
+; Include forcefield parameters
+#include "amber03a.ff/forcefield.itp"
+
+; Include chain topologies
+#include "1LFD_Protein_chain_A.itp"
+#include "1LFD_Protein_chain_B.itp"
+#include "1LFD_Protein_chain_C.itp"
+#include "1LFD_Protein_chain_D.itp"
+#include "1LFD_Other_chain_B2.itp"
+#include "1LFD_Other_chain_D2.itp"
+
+; Include water topology
+#include "amber03a.ff/tip3p.itp"
+
+#ifdef POSRES_WATER
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct       fcx        fcy        fcz
+   1    1       1000       1000       1000
+#endif
+
+; Include topology for ions
+#include "amber03a.ff/ions.itp"
+
+[ system ]
+; Name
+RALGDS; RAS
+
+[ molecules ]
+; Compound        #mols
+Protein_chain_A     1
+Protein_chain_B     1
+Protein_chain_C     1
+Protein_chain_D     1
+Other_chain_B2      1
+Other_chain_D2      1
+SOL                38
+SOL               103
+SOL                54
+SOL                97
