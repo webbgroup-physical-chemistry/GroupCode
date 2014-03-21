@@ -34,5 +34,7 @@ typedef std::vector< std::vector<double> > Matrix;
 int gmx_tilt(int argc, char *argv[]);
 void readCoords(int n_atoms, atom_id ind_atoms[], t_trxframe *fr, t_topology *top, 
                 Matrix &coords, gmx_bool bVerbose);
+void readCoords(int n_atoms, atom_id ind_atoms[], rvec *x, t_topology *top, 
+                   Matrix &coords, gmx_bool bVerbose);
 void displacement( Matrix &reference, Matrix &frame, t_tiltdata  &data );
 void average_coordinate( Matrix &coords, std::vector<double> &xyz);

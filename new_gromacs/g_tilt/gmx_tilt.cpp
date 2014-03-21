@@ -50,9 +50,6 @@ int gmx_tilt(int argc, char *argv[])
     traj_file   = opt2fn( "-f", NFILE, fnm);
     ref_file    = opt2fn("-fr", NFILE, fnm); 
     ndx_file    = ftp2fn(efNDX, NFILE, fnm);
-
-    // 1 if tpr, 0 if gro
-    //std::cout << fn2bTPX(ref_file) << std::endl;
     
     /* Open inputs */
     read_tps_conf(struct_file, buffer, &struct_top, &struct_ePBC,
@@ -62,7 +59,6 @@ int gmx_tilt(int argc, char *argv[])
 
     read_tps_conf(ref_file, buffer, &ref_top, &ref_ePBC,
                   &ref_xtop, NULL, ref_box, TRUE);
-    sfree(ref_xtop);
     ref_atoms = &ref_top.atoms;
 
     /* open xvg file */
@@ -83,10 +79,8 @@ int gmx_tilt(int argc, char *argv[])
     get_index(struct_atoms, ndx_file, 1, &n_structatoms, &ind_structatoms, &gn_structatoms);
      
     /* read the reference file and get coordinates */
-    read_first_frame(oenv, &ref_status, ref_file, &ref_fr, ref_flags);
-    std::cout << "\n\n" << *ref_top.atoms.atomname[0] << ref_top.atoms.atom[0].m << std::endl;;
     Matrix ref_ndxatoms(n_refatoms);
-    readCoords(n_refatoms, ind_refatoms, &ref_fr, &ref_top, ref_ndxatoms, bVerbose); 
+    readCoords(n_refatoms, ind_refatoms, ref_xtop, &ref_top, ref_ndxatoms, bVerbose);
 
     /* read trajectory file and loop through frames */
     int i=0;
@@ -95,7 +89,7 @@ int gmx_tilt(int argc, char *argv[])
         Matrix struct_ndxatoms(n_structatoms);
         readCoords(n_structatoms, ind_structatoms, &struct_fr, &struct_top, struct_ndxatoms, bVerbose);
         displacement(ref_ndxatoms, struct_ndxatoms, data);
-        if (bVerbose)
+        if (bVerbose || TRUE )
         {
             std::cout <<"\n Distance: " << data.distance[i];
         }
@@ -141,6 +135,42 @@ void displacement( Matrix &reference, Matrix &frame, t_tiltdata &data)
     data.distance.push_back( sqrt(x*x+y*y+z*z) );
 }
 
+/* Reading a TPX */
+void readCoords(int n_atoms, atom_id ind_atoms[], rvec *x, t_topology *top, Matrix &coords, gmx_bool bVerbose)
+{
+    double mass = 0;
+    for (int i=0; i<n_atoms; i++)
+    {
+        int n = ind_atoms[i];
+        std::vector<double> xyz(3);
+        xyz[0] = x[n][0];
+        xyz[1] = x[n][1];
+        xyz[2] = x[n][2];
+        mass += top->atoms.atom[n].m;
+        coords[i] = xyz;
+    }
+    for (int i=0; i<n_atoms; i++)
+    {
+        int n = ind_atoms[i];
+        for (int j=0; j<3; j++)
+        {
+            coords[i][j] *= top->atoms.atom[n].m;
+            coords[i][j] /= mass;
+        }
+    }
+    if (bVerbose)
+    {
+        std::cout << "\n\n Mass Weighted Atom Coordinates: ";
+        for (int i=0; i<n_atoms; i++)
+        {
+            std::cout << "\n\t" << *top->atoms.atomname[ind_atoms[i]];
+            std::cout << "\t" << top->atoms.atom[ind_atoms[i]].m << " " << coords[i][0] << " " << coords[i][1] << " " << coords[i][2];
+       }
+        std::cout << "\n";
+    }
+    return;
+}
+/* Reading a trajectory */
 void readCoords(int n_atoms, atom_id ind_atoms[], t_trxframe *fr, t_topology *top, Matrix &coords, gmx_bool bVerbose)
 {
     double mass = 0;
@@ -169,7 +199,7 @@ void readCoords(int n_atoms, atom_id ind_atoms[], t_trxframe *fr, t_topology *to
         for (int i=0; i<n_atoms; i++)
         {
             std::cout << "\n\t" << *top->atoms.atomname[ind_atoms[i]];
-            std::cout << "\n\t" << top->atoms.atom[ind_atoms[i]].m << " " << coords[i][0] << " " << coords[i][1] << " " << coords[i][2];
+            std::cout << "\t" << top->atoms.atom[ind_atoms[i]].m << " " << coords[i][0] << " " << coords[i][1] << " " << coords[i][2];
        }
         std::cout << "\n";
     }
