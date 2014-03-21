@@ -32,7 +32,7 @@ endif
 #get CPPFLAGS and LDFLAGS from pkg-config
 CPPFLAGS=`pkg-config --cflags libgmx`
 LDFLAGS=`pkg-config --libs libgmx`
-CC=/opt/local/bin/g++
+CC=g++
 
 
 #main program depend on all objects, rest is done by implicit rules

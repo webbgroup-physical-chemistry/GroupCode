@@ -1,10 +1,12 @@
 #! /bin/bash
 
 clear
+for i in `seq 100`; do echo ; done
 make clean
 make
 if [ -f g_tilt ] ; then
     clear
-#    ./g_tilt -f test/Rap_E30_K31+N27C.60-300.18.gro -s test/Rap_E30_K31+N27C.60-300.5.tpr -o test/blah.xvg -fr test/1LFD.tpr -n index.ndx
-    ./g_tilt -f test/rap_aligned.gro -s test/rap_aligned.tpr -o test/blah.xvg -fr test/1LFD.tpr -n test/ral.ndx
-    fi  
+    echo 0 1 | ./g_tilt -f test/rap_aligned.gro -s test/rap_aligned.tpr -o test/blah.xvg -fr test/1LFD.tpr -n test/ral.ndx -v
+#    echo 0 1 | ./g_tilt -f test/rap_aligned.xtc -s test/rap_aligned.tpr -o test/blah.xvg -fr test/1LFD.gro -n test/ral.ndx
+    rm test/*#
+    fi

@@ -1,4 +1,6 @@
 #include <iostream>
+#include <vector>
+#include <cmath>
 // gromacs c headers
 #ifdef __cplusplus
 extern "C"  
@@ -13,18 +15,24 @@ extern "C"
 #include <gromacs/gmx_fatal.h>
 #include <gromacs/nbsearch.h>
 #include <gromacs/trajana.h>
+#include <gromacs/tpxio.h>
 
 
 typedef struct
 {
-    gmx_ana_selection_t *refsel;
-    FILE                *fp;
-    real                *ave;
-    real                *n;
-    gmx_ana_nbsearch_t  *nb;
-} t_analysisdata;
+    FILE   *fp;
+    std::vector<double> distance;
+    std::vector<double> x_rotation;
+    std::vector<double> y_rotation;
+    std::vector<double> z_rotation;
+    std::vector<double> theta_rotation;
+    std::vector<double> phi_rotation;
+} t_tiltdata;
+
+typedef std::vector< std::vector<double> > Matrix;
 
 int gmx_tilt(int argc, char *argv[]);
-static int analyze_frame(t_topology *top, t_trxframe *fr, t_pbc *pbc, 
-                         int nr, gmx_ana_selection_t *sel[], void *data);
-
+void readCoords(int n_atoms, atom_id ind_atoms[], t_trxframe *fr, t_topology *top, 
+                Matrix &coords, gmx_bool bVerbose);
+void displacement( Matrix &reference, Matrix &frame, t_tiltdata  &data );
+void average_coordinate( Matrix &coords, std::vector<double> &xyz);

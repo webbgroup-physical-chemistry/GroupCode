@@ -322,23 +322,37 @@ def kabsch_alignment( pose1, pose2 , pose1sel = [], pose2sel = [] ):
     stsel2 = numpy.dot((molsel2 - COM2), U)
     stsel2 = stsel2.tolist()
     # center the molecule
-    stsel1 = molsel1 - COM1
-    stsel1 = stsel1.tolist()
-    
+#    stsel1 = molsel1 - COM1
+#    stsel1 = stsel1.tolist()
+
+    center_on_COM1 = COM1
+    if pose1.ext == "pdb" and pose2.ext == "gro" :
+        center_on_COM1 /= 10.
+    elif pose1.ext == "gro" and pose2.ext == "pdb" :
+        center_on_COM1 *= 10.
+
     # apply the changes to both poses
-    for i in range(pose1.natoms) : 
-        pose1.coord[i]=stsel1[i]
-    for i in range(pose2.natoms) : 
-        pose2.coord[i]=stsel2[i]
+#    for i in range(pose1.natoms) :
+#        pose1.coord[i]=stsel1[i]           # centered on COM
+#        pose1.coord[i]=stsel1[i] + COM1    # return to original position
+    for i in range(pose2.natoms) :
+        #pose2.coord[i]=stsel2[i]           # centered on COM
+        pose2.coord[i]=stsel2[i] + center_on_COM1
     
     pose1base = os.path.basename(pose1.name.replace('.%s'%pose1.ext,''))
     pose2base = os.path.basename(pose2.name.replace('.%s'%pose2.ext,''))
     pose1name = pose1.name.replace('.%s'%pose1.ext,'.fit2.%s.%s'%(pose2base,pose1.ext))
     pose2name = pose2.name.replace('.%s'%pose2.ext,'.fit2.%s.%s'%(pose1base,pose2.ext))
-    backup_outname(pose1name)
+#    backup_outname(pose1name)
     backup_outname(pose2name)
-    pose1.write_gro(pose1name)
-    pose2.write_gro(pose2name)
+#    if pose1.ext == "gro" :
+#        pose1name = pose1.write_gro(pose1name)
+#    elif pose1.ext == "pdb" :
+#        pose1name = pose1.write_pdb(pose1name)
+    if pose2.ext == "gro" :
+        pose2name = pose2.write_gro(pose2name)
+    elif pose2.ext == "pdb" :
+        pose2name = pose2.write_pdb(pose2name)
     print 'RMSD=%f' % RMSD
     return pose1name, pose2name
 
@@ -684,6 +698,15 @@ class structure() :
                 if self.atom[i] in atomnames : 
                     coords.append(self.coord[i])
         return numpy.array(coords)
+    def extract_index(self,residues,atomnames=[]) :
+        ndxs = []
+        if not atomnames :
+            atomnames = ['CA']
+        for i in range(self.natoms) :
+            if self.resid[i] in residues :
+                if self.atom[i] in atomnames :
+                    ndxs.append(self.index[i])
+        return numpy.array(ndxs)
 
 def merge_structures(pose1, pose2, outname, residue1sel = [], residue2sel = [], new_cterm = False, position = 0 ) :
     """
