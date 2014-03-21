@@ -77,6 +77,11 @@ int gmx_tilt(int argc, char *argv[])
     get_index(ref_atoms, ndx_file, 1, &n_refatoms, &ind_refatoms, &gn_refatoms);
     std::cout<< "Select group from <" << struct_file <<"> to compare to <" << ref_file << ">." << std::endl;
     get_index(struct_atoms, ndx_file, 1, &n_structatoms, &ind_structatoms, &gn_structatoms);
+
+    if ( n_structatoms != n_refatoms ) 
+    {
+        gmx_fatal(FARGS, "\nThe number of atoms in the index groups are different.");
+    }
      
     /* read the reference file and get coordinates */
     Matrix ref_ndxatoms(n_refatoms);
@@ -89,7 +94,7 @@ int gmx_tilt(int argc, char *argv[])
         Matrix struct_ndxatoms(n_structatoms);
         readCoords(n_structatoms, ind_structatoms, &struct_fr, &struct_top, struct_ndxatoms, bVerbose);
         displacement(ref_ndxatoms, struct_ndxatoms, data);
-        if (bVerbose || TRUE )
+        if (bVerbose)
         {
             std::cout <<"\n Distance: " << data.distance[i];
         }
