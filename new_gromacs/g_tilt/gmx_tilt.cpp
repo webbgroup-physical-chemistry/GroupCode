@@ -147,7 +147,7 @@ void readCoords(int n_atoms, atom_id ind_atoms[], rvec *x, t_topology *top, Matr
     for (int i=0; i<n_atoms; i++)
     {
         int n = ind_atoms[i];
-        std::vector<double> xyz(3);
+        std::vector<double> xyz(3,0);
         xyz[0] = x[n][0];
         xyz[1] = x[n][1];
         xyz[2] = x[n][2];
@@ -182,7 +182,7 @@ void readCoords(int n_atoms, atom_id ind_atoms[], t_trxframe *fr, t_topology *to
     for (int i=0; i<n_atoms; i++)
     {
         int n = ind_atoms[i];
-        std::vector<double> xyz(3);
+        std::vector<double> xyz(3,0);
         xyz[0] = fr->x[n][XX];
         xyz[1] = fr->x[n][YY];
         xyz[2] = fr->x[n][ZZ];
