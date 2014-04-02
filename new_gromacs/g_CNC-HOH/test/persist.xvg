@@ -1,10 +1,10 @@
-# This file was created Wed Apr  2 16:35:51 2014
+# This file was created Wed Apr  2 16:54:05 2014
 # by the following command:
 # ./g_CNC-HOH -f test/production-1.xtc -s test/production-1.tpr -o test/hbonds.xvg -op test/persist.xvg -oa test/residues.log 
 #
 # g_CNC-HOH is part of G R O M A C S:
 #
-# GROup of MAchos and Cynical Suckers
+# Getting the Right Output Means no Artefacts in Calculating Stuff
 #
 @    title "Persistent Waters and Hydrogen Bonds"
 @    xaxis  label "Number of Frames"
