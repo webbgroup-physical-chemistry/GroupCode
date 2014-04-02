@@ -107,7 +107,7 @@ int gmx_CNCHOH(int argc, char *argv[])
         gmx_bool hbond = false;
         water.push_back(analyze_frame(&fr, &top, cutoffs));
         // Count the number of waters within cutoff and hydrogen bonding
-        outputfile << "\n [ frame" << i << " ]\n";
+        outputfile << " " << traj_file << "\n [ frame" << i << " ]\n";
         for (int j=0; j<water[i].size(); j++)
         {
             if (i > 0) // Not persistent in first frame
