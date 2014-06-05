@@ -254,7 +254,7 @@ def diff_ndx( new, original, ndxName ) :
     writeLines(ndxName,s)
     return ndxName
 
-def kabsch_alignment( pose1, pose2 , pose1sel = [], pose2sel = [] ):
+def kabsch_alignment( pose1, pose2 , pose1sel = [], pose2sel = [], ndx=False ):
     """
     Performs the Kabsch alignment algorithm upon the N CA C O of two selections.
    
@@ -275,8 +275,8 @@ def kabsch_alignment( pose1, pose2 , pose1sel = [], pose2sel = [] ):
     # obtain a list of the atom positions to align
 #    atoms_to_fit = ['CA','N','C','O','OC1']
     atoms_to_fit = ['CA','N','C']
-    stsel1 = pose1.extract_coordinates(pose1sel,atoms_to_fit)
-    stsel2 = pose2.extract_coordinates(pose2sel,atoms_to_fit)
+    stsel1 = pose1.extract_coordinates(pose1sel,atoms_to_fit,ndx=ndx)
+    stsel2 = pose2.extract_coordinates(pose2sel,atoms_to_fit,ndx=ndx)
 
     # remember all of each pose's atom positions, to apply transformation
     #    later for updating
@@ -302,13 +302,11 @@ def kabsch_alignment( pose1, pose2 , pose1sel = [], pose2sel = [] ):
     # bases that when multiplied by each other give us the rotation matrix, U.
     # S, (Sigma, from SVD) provides us with the error!  Isn't SVD great!
     V, S, Wt = numpy.linalg.svd( numpy.dot( numpy.transpose(stsel2), stsel1))
-
     # we already have our solution, in the results from SVD.
     # we just need to check for reflections and then produce
     # the rotation.  V and Wt are orthonormal, so their det's
     # are +/-1.
     reflect = float(str(float(numpy.linalg.det(V) * numpy.linalg.det(Wt))))
-
     if reflect == -1.0:
         S[-1] = -S[-1]
         V[:,-1] = -V[:,-1]
@@ -358,7 +356,7 @@ def kabsch_alignment( pose1, pose2 , pose1sel = [], pose2sel = [] ):
 
     
 class structure() : 
-    def __init__(self, name = None):
+    def __init__(self, name = None, ignore_solvent = False):
         printbox("\n\nReading %s\n\n"%name)
         self.name = name
         self.ext = name.split('.')[-1]
@@ -377,7 +375,11 @@ class structure() :
         self.cterm = []
         lines = readFile(self.name)
         at_nterm = True
-        for line in lines : 
+        for line in lines :
+            if ("SOL" in line or "HOH" in line) and ignore_solvent :
+                break
+            if ("Na+" in line or "Cl-" in line) and ignore_solvent :
+                break
             if "TER" not in line and "END" not in line and "ENDMDL" not in line : 
                 if self.ext == 'gro' : 
                     try :
@@ -646,10 +648,13 @@ class structure() :
         filename = gro_name(filename)
         backup_outname(filename)
         filelines = self.groHeader
-        filelines += " %i\n"%len(self.writeIndex)
+        filelines += " NATOMS\n"
+        natoms = 0
         for i in self.writeIndex :
             if self.resid[i] <= maxresnum :
                 filelines += self.newline(i,newext='gro')
+                natoms += 1
+        filelines = filelines.replace("NATOMS","%i"%natoms)
         filelines += self.groFooter
         file = open(filename,'w')
         file.write(filelines)
@@ -689,15 +694,21 @@ class structure() :
         self.min=numpy.array((min(xs),min(ys),min(zs)))
         self.max=numpy.array((max(xs),max(ys),max(zs)))
 
-    def extract_coordinates(self,residues,atomnames=[]) :
+    def extract_coordinates(self,residues,atomnames=[],ndx=False) :
         coords = []
-        if not atomnames : 
-            atomnames = ['CA']
-        for i in range(self.natoms) : 
-            if self.resid[i] in residues : 
-                if self.atom[i] in atomnames : 
+        if ndx :
+            for i in range(self.natoms) :
+                if self.index[i] in residues :
                     coords.append(self.coord[i])
+        else :
+            if not atomnames :
+                atomnames = ['CA']
+            for i in range(self.natoms) :
+                if self.resid[i] in residues :
+                    if self.atom[i] in atomnames :
+                        coords.append(self.coord[i])
         return numpy.array(coords)
+
     def extract_index(self,residues,atomnames=[]) :
         ndxs = []
         if not atomnames :
@@ -827,18 +838,20 @@ def align_sequence( struct1, struct2, gscore=-3, match_HIS2HIx = True ) :
                 score = -1
             mat[a][b] = score
     """
-    This is tie dynamic programming matrix.
+    This is the dynamic programming matrix.
     """
-#    print "%4s,"%"",
-#    for i in range(ai) : 
-#        print "%4s,"%aseq[i],
-#    print "\n",
-#    for j in range(bi) : 
-#        print "%4s,"%(bseq[j]),
-#        for i in range(ai) : 
-#            print "%4i,"%mat[i][j],
-#        print "\n",
-#    print "\n"
+    """
+    print "%4s,"%"",
+    for i in range(ai) :
+        print "%4s,"%aseq[i],
+    print "\n",
+    for j in range(bi) :
+        print "%4s,"%(bseq[j]),
+        for i in range(ai) :
+            print "%4i,"%mat[i][j],
+        print "\n",
+    print "\n"
+    """
     fillmat = numpy.zeros(shape=(ai,bi)) 
     for a in range(1,ai) : 
         for b in range(1,bi) : 
@@ -849,18 +862,20 @@ def align_sequence( struct1, struct2, gscore=-3, match_HIS2HIx = True ) :
     This is the scoring matrix that you follow the diagnals of
     <http://www.avatar.se/molbioinfo2001/dynprog/dynamic.html>
     """
-#    print "%3s,"%"",
-#    for i in range(ai) : 
-#        print "%3s,"%aseq[i],
-#    print "\n",
-#    for j in range(bi) : 
-#        print "%3s,"%(bseq[j]),
-#        for i in range(ai) : 
-#            print "%3i,"%(fillmat[i][j]),
-##            if i > 20 : break
-#        print "\n",
-##        if j > 20 : break
-#    print "\n"   
+    """
+    print "%3s,"%"",
+    for i in range(ai) :
+        print "%3s,"%aseq[i],
+    print "\n",
+    for j in range(bi) :
+        print "%3s,"%(bseq[j]),
+        for i in range(ai) :
+            print "%3i,"%(fillmat[i][j]),
+#            if i > 20 : break
+        print "\n",
+#        if j > 20 : break
+    print "\n"
+    """
     # I need to know the location of the highest score; thats where we begin
     # the alignment
     imax = 0

@@ -97,4 +97,3 @@ public :
     void write(std::string outfile, std::string probfile, average boltzmann, average bootstrap,int nsteps);
 
 };
-void foo(int i, int th);

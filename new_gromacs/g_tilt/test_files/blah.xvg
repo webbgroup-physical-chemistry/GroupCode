@@ -1,0 +1,29 @@
+# This file was created Mon Jun  2 16:47:25 2014
+# by the following command:
+# ./g_tilt -f test_files/rap_aligned.gro -s test_files/rap_aligned.tpr -o test_files/blah.xvg -fr test_files/1LFD.tpr -n test_files/ral.ndx -v 
+#
+# g_tilt is part of G R O M A C S:
+#
+# Guyana Rwanda Oman Macau Angola Cameroon Senegal
+#
+@    title "Center of Mass displacement"
+@    xaxis  label "Time[ps]"
+@    yaxis  label "Tilt Angle[degrees]"
+@TYPE xy
+@ view 0.15, 0.15, 0.75, 0.85
+@ legend on
+@ legend box on
+@ legend loctype view
+@ legend 0.78, 0.8
+@ legend length 2
+@ s0 legend "Time[ps]"
+@ s1 legend "tilt[deg]"
+@ s2 legend "rmsd[nm]"
+@ s3 legend "CoM displacement[nm]"
+@ s4 legend "Rotation axis x-component[nm]"
+@ s5 legend "Rotation axis y-component[nm]"
+@ s6 legend "Rotation axis z-component[nm]"
+@ s7 legend "X-axis rotation[deg]"
+@ s8 legend "Y-axis rotation[deg]"
+@ s9 legend "Z-axis rotation[deg]"
+    0.00    45.55    0.334    0.246    -0.935831     0.351745    -0.022263   -43.55    14.91    -4.91

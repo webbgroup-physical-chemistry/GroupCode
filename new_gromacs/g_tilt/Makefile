@@ -30,14 +30,15 @@ else
 endif
 
 #get CPPFLAGS and LDFLAGS from pkg-config
-CPPFLAGS=`pkg-config --cflags libgmx`
+CPPFLAGS= -O3 `pkg-config --cflags libgmx`
 LDFLAGS=`pkg-config --libs libgmx`
+LDLIB = -lblas -llapack 
 CC=g++
 
 
 #main program depend on all objects, rest is done by implicit rules
 $(NAME): $(OBJS)
-	$(CC) $(LDFLAGS) $(CPPFLAGS) -o $@ $^
+	$(CC) $(LDLIB) $(LDFLAGS) $(CPPFLAGS) -o $@ $^
 %.o: %.cpp
 	$(CC) $(CPPFLAGS) $(LDFLAGS) -c $<
 

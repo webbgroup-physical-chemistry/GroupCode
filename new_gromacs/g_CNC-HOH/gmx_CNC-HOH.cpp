@@ -15,12 +15,13 @@ int gmx_CNCHOH(int argc, char *argv[])
     const char      *ndx_file, *xvg_file;
     t_hbdata        data;
     /*
+    r average = .205(.020)
     theta1 = CNH, average = 145(23)
     theta2 = NHO, average = 156(18)
     95% of data within +/- 2 * STD
     */
     parms           cutoffs;
-    cutoffs.r       = 0.225;
+    cutoffs.r       = 0.245;
     cutoffs.cnh     = 145 - (2*23);
     cutoffs.nho     = 156 - (2*18);
     cutoffs.rmax    = 0.5;
@@ -32,7 +33,7 @@ int gmx_CNCHOH(int argc, char *argv[])
         { "-CNH_cutoff", FALSE, etREAL, {&cutoffs.cnh},
           "Minimum N-H-O bond angle to count as a hydorgen bond.  Default=(145 - 2*23) degrees"},
         { "-NH_cutoff", FALSE, etREAL, {&cutoffs.r},
-          "Minimum N-H bond distance to count as a hydrogen bond.  Default=0.225 nm"},
+          "Minimum N-H bond distance to count as a hydrogen bond.  Default=(0.205 + 2*.020) nm"},
         { "-cutoff", FALSE, etREAL, {&cutoffs.rmax},
           "Minimum distance from CNC nitrogen to count as \"near\" the probe.  Default=0.50 nm"},
     };
@@ -40,10 +41,11 @@ int gmx_CNCHOH(int argc, char *argv[])
         {efTPS, NULL, NULL, ffREAD},
         {efTRX, NULL, NULL, ffREAD},
         {efXVG, "-o","CNC-HOH",ffWRITE},
-        {efXVG, "-op","persistent_CNC-HOH",ffOPTWR},
-        {efLOG, "-oa","residues",ffOPTWR},
+        {efXVG, "-op","persistent_CNC-HOH",ffWRITE},
+        {efLOG, "-oa","residues",ffWRITE},
         {efNDX, NULL, NULL, ffREAD},
     };
+    gmx_bool doLog = false, doPersistent = false;
 #define NFILE asize(fnm)
 #define NPA asize(pa)
     output_env_t    oenv;
@@ -76,18 +78,16 @@ int gmx_CNCHOH(int argc, char *argv[])
     sfree(xtop);
     atoms = &top.atoms;
 
-    /* open xvg file */
+    /* open xvg files */
     data.fp = NULL;
-    if (opt2bSet("-o", NFILE, fnm))
-    {
-        data.fp = xvgropen(opt2fn("-o", NFILE, fnm), "Trajectory Hydrogen Bonds","Time[ps]", "Number of Hydrogen Bonds", oenv);
-    }
+    data.fp = xvgropen(opt2fn("-o", NFILE, fnm), "Trajectory Hydrogen Bonds","Time[ps]", "Number of Hydrogen Bonds", oenv);
     
     data.fpp = NULL;
     if (opt2bSet("-op", NFILE, fnm))
     {
         data.fpp = xvgropen(opt2fn("-op", NFILE, fnm), "Persistent Waters and Hydrogen Bonds", "Number of Frames", "Number Water Molecules", oenv);
         xvgr_legend(data.fpp,asize(flegend), flegend, oenv);
+        doPersistent = true;
     }
     
     data.fpa = NULL;
@@ -96,6 +96,7 @@ int gmx_CNCHOH(int argc, char *argv[])
     {
         data.fpa = opt2fn("-oa", NFILE, fnm);
         outputfile.open(data.fpa);
+        doLog = true;
     }
     /* read trajectory file and loop through frames */
     int i=0;
@@ -117,7 +118,7 @@ int gmx_CNCHOH(int argc, char *argv[])
                     if (water[i-1][j].rstatus > 0)
                     {
                         data.nps[j]++;
-                        if (opt2bSet("-oa", NFILE, fnm))
+                        if (doLog)
                         {
                             outputfile << water[i][j].resid << " ";
                         }
@@ -125,7 +126,7 @@ int gmx_CNCHOH(int argc, char *argv[])
                     if (water[i][j].rstatus == 2)
                     {
                         data.nhbs[j]++;
-                        if (opt2bSet("-oa", NFILE, fnm))
+                        if (doLog)
                         {
                             outputfile << "(" << water[i][j].resid << ") ";
                         }
@@ -190,16 +191,19 @@ int gmx_CNCHOH(int argc, char *argv[])
         tnps[i] = sump;
         tnhbs[i] = sumhb;
     }
-    for (int i=0;i<nps.size();i++)
+    if (doPersistent)
     {
-        fprintf(data.fpp,"%10i %10i %10i %10i %10i\n",i,nps[i],nhbs[i],tnps[i],tnhbs[i]);
+        for (int i=0;i<nps.size();i++)
+        {
+            fprintf(data.fpp,"%10i %10i %10i %10i %10i\n",i,nps[i],nhbs[i],tnps[i],tnhbs[i]);
+        }
     }
     fprintf(stdout,"Total hydrogen bonding: %10i (%10.3f%% of frames)\n",data.nhb,percent);
     if (data.fp)
     {
         ffclose(data.fp);
     }
-    if (opt2bSet("-oa", NFILE, fnm))
+    if (doLog)
     {
         outputfile << "\n";
         outputfile.close();

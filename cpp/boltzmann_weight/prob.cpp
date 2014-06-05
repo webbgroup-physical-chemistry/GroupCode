@@ -554,9 +554,3 @@ void WriteOutputs::write( std::string outfile, std::string probfile, average bol
     outputfile.close();
 }
 
-void foo(int i, int th)
-{
-    printf("\n%d on THREAD %d",i,th);
-    int n=0;
-    for (int i=0;i<1e8;i++){n++;}
-}

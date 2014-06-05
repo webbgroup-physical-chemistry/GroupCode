@@ -64,7 +64,7 @@ elec \n\
     temp 300.0 \n\
     calcenergy total \n\
     calcforce no \n\
-    write pot dx OUTPUT \n\
+    write atompot flat OUTPUT \n\
 end \n"
 
 def makeXYZ( trr, tpr, top, ndx, out, parm) :
