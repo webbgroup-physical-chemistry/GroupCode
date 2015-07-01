@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#! /usr/bin/env python
 # writedummies.py
 # put dummy atoms between CD and NE of the nitrile
 # dummy atoms include CD and NE coordinates

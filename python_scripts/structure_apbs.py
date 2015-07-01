@@ -19,7 +19,7 @@ elec \n\
     mg-manual \n\
 \n\
     dime 97 97 97 \n\
-    glen 240.0 240.0 240.0 # 2.5 Angstroms \n\
+    glen 250.0 250.0 250.0 # 2.5 Angstroms \n\
 \n\
     gcent mol 1 \n\
     mol 1 \n\

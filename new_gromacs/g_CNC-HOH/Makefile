@@ -30,7 +30,7 @@ else
 endif
 
 #get CPPFLAGS and LDFLAGS from pkg-config
-CPPFLAGS=`pkg-config --cflags libgmx`
+CPPFLAGS=`pkg-config --cflags libgmx` -fopenmp
 LDFLAGS=`pkg-config --libs libgmx`
 CC=g++
 

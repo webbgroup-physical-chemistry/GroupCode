@@ -1,4 +1,4 @@
-#! /usr/local/bin/python
+#! /usr/bin/env python
 
 import numpy
 import os
@@ -25,7 +25,7 @@ elec name solv \n\
     lpbe \n\
     bcfl mdh \n\
     ion charge 1 conc CONC radius 2.0 \n\
-    ion charge -1 conc CONC radius 1.0 \n\
+    ion charge -1 conc CONC radius 2.0 \n\
     pdie PDIE \n\
     sdie SDIE \n\
     chgm spl2 \n\
@@ -36,6 +36,7 @@ elec name solv \n\
     temp TEMP \n\
     calcenergy total \n\
     calcforce no \n\
+    write atompot flat out_solvated \n\
 end \n\
 \n\
 # Solvation Energy - REFERENCE STATE \n\
@@ -47,8 +48,8 @@ elec name ref  \n\
     mol 1 \n\
     lpbe \n\
     bcfl mdh \n\
-    ion charge 1 conc 0.0 radius 2.0 \n\
-    ion charge -1 conc 0.0 radius 1.0 \n\
+    ion charge 1 conc CONC radius 2.0 \n\
+    ion charge -1 conc CONC radius 2.0 \n\
     pdie PDIE \n\
     sdie PDIE \n\
     chgm spl2 \n\
@@ -59,10 +60,9 @@ elec name ref  \n\
     temp TEMP \n\
     calcenergy total \n\
     calcforce no \n\
+    write atompot flat out_vacuum \n\
 end \n\
 \n\
-# Solvation energy \n\
-print elecEnergy solv - ref end \n\
 quit\n\
 "
 
@@ -253,6 +253,6 @@ def writeInput(glen,dime) :
 if __name__ == "__main__":
     (glen,dime) = GenerateDimensions()
     writeInput(glen,dime)
-    writeLines("/Users/ritchie/Utilities/apbs/solv.template.in",template)
+    #writeLines("/Users/ritchie/Utilities/apbs/solv.template.in",template)
     
     

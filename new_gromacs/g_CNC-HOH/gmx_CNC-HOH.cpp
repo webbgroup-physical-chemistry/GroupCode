@@ -15,6 +15,8 @@ int gmx_CNCHOH(int argc, char *argv[])
     const char      *ndx_file, *xvg_file;
     t_hbdata        data;
     /*
+     Hydrogen-bond acceptor properties of nitriles: a combined crystallographic and ab initio theoretical investigation
+     Jean-Yves Le Questel, Michel Berthelot and Christian Laurence
     r average = .205(.020)
     theta1 = CNH, average = 145(23)
     theta2 = NHO, average = 156(18)
@@ -102,6 +104,7 @@ int gmx_CNCHOH(int argc, char *argv[])
     int i=0;
     std::vector<t_water> water;
     data.nhb = 0;
+    int nhb = 0;
     read_first_frame(oenv, &status, traj_file, &fr, flags);
     do {
         int frame_hbond = 0; // per frame number of hbonds, 0 or 1
@@ -109,7 +112,14 @@ int gmx_CNCHOH(int argc, char *argv[])
         water.push_back(analyze_frame(&fr, &top, cutoffs));
         // Count the number of waters within cutoff and hydrogen bonding
         outputfile << " " << traj_file << "\n [ frame" << i << " ]\n";
-        for (int j=0; j<water[i].size(); j++)
+        
+        data.nps = std::vector<int> ((int)water[i].size(),0);
+        data.nhbs = std::vector<int> ((int)water[i].size(),0);
+/*
+ * Making threads is too expensive...
+ */
+//#pragma omp parallel for num_threads(8) reduction(+ : nhb)
+        for (int j=0; j<(int)water[i].size(); j++)
         {
             if (i > 0) // Not persistent in first frame
             {
@@ -132,7 +142,7 @@ int gmx_CNCHOH(int argc, char *argv[])
                         }
                         if (hbond == false) // only 1 hbond per frame while we still allow persistent checks
                         {
-                            data.nhb++;
+                            nhb++;
                             frame_hbond = 1;
                             hbond = true;
                         }
@@ -142,13 +152,13 @@ int gmx_CNCHOH(int argc, char *argv[])
             else
             {
                 // Make sure the array size of data.nps and .nhbs is the number of water molecules
-                data.nps.push_back(0);
-                data.nhbs.push_back(0);
+                //data.nps.push_back(0);
+                //data.nhbs.push_back(0);
                 if (water[i][j].rstatus > 0)
                 {
                     data.nps[j] = 1;
                     {
-                        outputfile << water[i][j].resid << " ";
+                        //outputfile << water[i][j].resid << " ";
                     }
                     if (water[i][j].rstatus == 2)
                     {
@@ -158,7 +168,7 @@ int gmx_CNCHOH(int argc, char *argv[])
                         }
                         if (hbond == false) // only 1 h-bond per frame while we still allow persistent checks
                         {
-                            data.nhb = 1;
+                            nhb = 1;
                             frame_hbond = 1;
                             hbond = true;
                         }
@@ -172,6 +182,9 @@ int gmx_CNCHOH(int argc, char *argv[])
         }
         i++;
     } while(read_next_frame(oenv, status, &fr));
+
+    data.nhb = nhb;
+
     double nframes = i;
     double percent = data.nhb/nframes * 100.;
     

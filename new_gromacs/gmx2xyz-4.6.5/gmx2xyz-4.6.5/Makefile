@@ -7,7 +7,7 @@
 # $ make -f Makefile.pkg
 #
 #change the name of the program here
-NAME=gmx2xyz
+NAME := gmx2xyz
 
 #add extra c file to compile here
 EXTRA_SRC=
@@ -20,7 +20,7 @@ EXTRA_SRC=
 all: $(NAME)
 
 #if GMXLDLIB is defined we add it to PKG_CONFIG_PATH
-export GMXLDLIB=/usr/local/gromacs/lib
+#export GMXLDLIB=/usr/local/gromacs/lib
 ifeq "$(origin GMXLDLIB)" "undefined"
   $(error "GMXLDLIB not found, please source GMXRC")
 else
@@ -28,11 +28,11 @@ else
 endif
 
 #get CPPFLAGS and LDFLAGS from pkg-config
-CPPFLAGS=`pkg-config --cflags libgmx`
-LDFLAGS=`pkg-config --libs libgmx`
+CPPFLAGS := `pkg-config --cflags libgmx`
+LDFLAGS := `pkg-config --libs libgmx`
 
 #generate a list of object (.o) files
-OBJS=$(patsubst %.c,%.o,$(NAME).c $(EXTRA_SRC))
+OBJS := $(patsubst %.cpp,%.o,$(NAME).cpp $(EXTRA_SRC))
 
 #main program depend on all objects, rest is done by implicit rules
 $(NAME): $(OBJS)

@@ -1,4 +1,4 @@
-#! /anaconda/bin/python
+#! /usr/bin/env python
 
 import numpy
 from math import pi, atan2, cos, sin, isnan
@@ -38,7 +38,7 @@ def gro_coords( fileline ) :
     z=float(fileline[36:44])
     return numpy.array((x,y,z))
     
-def gro_resid( fileline ) : 
+def gro_resid( fileline ) :
     return int(fileline[0:5].split()[0])
 
 def gro_atomid( fileline ) : 
@@ -380,10 +380,14 @@ class structure() :
                 break
             if ("Na+" in line or "Cl-" in line) and ignore_solvent :
                 break
-            if "TER" not in line and "END" not in line and "ENDMDL" not in line : 
-                if self.ext == 'gro' : 
+            if "TER" not in line and "END" not in line and "ENDMDL" not in line :
+                if self.ext == 'gro' :
                     try :
-                        float(line.split()[5]) 
+                        #print line,
+                        #print "0123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 "
+                        #float(line.split()[5])
+                        float(line[36:41])
+                        #print line.strip()
                         self.line.append(line)
                         self.atom.append(gro_atomname(line))
                         self.coord.append(gro_coords(line))
@@ -391,6 +395,12 @@ class structure() :
                         self.resid.append(gro_resid(line))
                         self.resname.append(gro_resname(line))
                         self.writeIndex.append(self.natoms)
+                        #print gro_atomname(line),
+                        #print gro_coords(line),
+                        #print gro_atomid(line),
+                        #print gro_resid(line),
+                        #print gro_resname(line),
+                        #print self.natoms
                         if "OC2" == gro_atomname(line) and not at_nterm : 
                             self.cterm.append(gro_resid(line))
                             at_nterm = True
@@ -398,7 +408,7 @@ class structure() :
                             self.nterm.append(gro_resid(line))
                             at_nterm = False
                         self.natoms += 1
-                    except (ValueError, IndexError) : 
+                    except (ValueError, IndexError) :
                         pass
                 elif self.ext == 'pdb' :
                     if ('ATOM' in line or 'HETATM' in line) : 
@@ -512,7 +522,9 @@ class structure() :
         return dihedral
         
     def rotate(self,new_dihedral,dih_ndx,index) :
+        print dih_ndx,
         dih_ndx = sorted(dih_ndx) # I think the relevant dihedrals wll ALWAYS be indexed smallest to largest
+        print dih_ndx
         index = sorted(index)
         cur_dih = self.dihedral(dih_ndx)
         if not cur_dih : 
@@ -534,11 +546,11 @@ class structure() :
         index = numpy.array(index) - 1
         centeringVector = -1 * self.coord[dih_ndx[1]-1]
         rotationAxis = self.coord[dih_ndx[2]-1] + centeringVector
-        printcenter("Current Dihedral angle about \n<%s(%i%s) - %s(%i%s) - %s(%i%s) - %s(%i%s)>\nis %.3f degrees"\
-        %(self.atom[dih_ndx[0]-1],self.resid[dih_ndx[0]-1],self.resname[dih_ndx[0]-1],\
-        self.atom[dih_ndx[1]-1],self.resid[dih_ndx[1]-1],self.resname[dih_ndx[1]-1],\
-        self.atom[dih_ndx[2]-1],self.resid[dih_ndx[2]-1],self.resname[dih_ndx[2]-1],\
-        self.atom[dih_ndx[3]-1],self.resid[dih_ndx[3]-1],self.resname[dih_ndx[3]-1],cur_dih))
+        printcenter("Current Dihedral angle about \n<%s(%i%s-%i) - %s(%i%s-%i) - %s(%i%s-%i) - %s(%i%s-%i)>\nis %.3f degrees"\
+        %(self.atom[dih_ndx[0]-1],self.resid[dih_ndx[0]-1],self.resname[dih_ndx[0]-1],dih_ndx[0],\
+        self.atom[dih_ndx[1]-1],self.resid[dih_ndx[1]-1],self.resname[dih_ndx[1]-1],dih_ndx[1],\
+        self.atom[dih_ndx[2]-1],self.resid[dih_ndx[2]-1],self.resname[dih_ndx[2]-1],dih_ndx[2],\
+        self.atom[dih_ndx[3]-1],self.resid[dih_ndx[3]-1],self.resname[dih_ndx[3]-1],dih_ndx[3],cur_dih))
         printw("\nCentering about %s(%i%s)"%(self.atom[dih_ndx[1]-1],self.resid[dih_ndx[1]-1],self.resname[dih_ndx[1]-1]))
         printw("Rotation about %s(%i%s) - %s(%i%s)\n"%(self.atom[dih_ndx[1]-1],self.resid[dih_ndx[1]-1],self.resname[dih_ndx[1]-1],\
         self.atom[dih_ndx[2]-1],self.resid[dih_ndx[2]-1],self.resname[dih_ndx[2]-1]))
@@ -590,10 +602,10 @@ class structure() :
                     self.line[i] = self.newline(i,resname=replacement)
                     printw("Mutated <%s(%i%s) to %s(%i%s)>"%(self.atom_0[i],self.resid_0[i],self.resname_0[i],self.atom[i],self.resid[i],self.resname[i]))
                     mutated = True
-#                    print self.line_0[i],self.line[i]
-                else : 
+                    #print self.line_0[i],self.line[i]
+                else :
                     self.writeIndex.remove(i)
-        return mutated        
+        return mutated
     
     def met_2_cnc(self,resnum) : 
         """Specialized version of replace_residue intended to turn the MET into a CNC"""

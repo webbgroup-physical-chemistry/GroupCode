@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#! /usr/bin/env python
 
 from optparse import OptionParser
 import sys
@@ -26,7 +26,7 @@ parser.add_option("-c",\
                   dest="fix_zero",\
                   default=True,\
                   action="store_false",\
-                  help="Fix it so strucutre <groname>-0.gro has a dihedral of 0"\
+                  help="Do not fix it so structure <groname>-0.gro has a dihedral of 0"\
                   )
 parser.add_option("-x",\
                   "--chi",\
@@ -239,7 +239,7 @@ for rotdegrees in range(0,360,rotstep) :
         #print rotdegrees
         distances = []
         angle = (degree_shift-dihedral)*(pi/180) # convert to radians
-        print degree_shift, dihedral, angle*180/pi
+        #print degree_shift, dihedral, angle*180/pi
         s = sin( angle )
         c = cos( angle )
         rotmat = [ [ ux2 + (1-ux2)*c, uxuy*(1-c) - uz*s, uxuz*(1-c)+uy*s ],

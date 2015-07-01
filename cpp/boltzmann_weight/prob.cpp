@@ -357,7 +357,7 @@ void Stats::resampleAverage()
     int randN;
     for (int i=0; i<frames.prob.size(); i++)
     {
-        randN = rand() % frames.prob.size();
+        randN = rand() % frames.prob.size(); // generate random number between 0 and max number of frames
         resample.prob.push_back(frames.prob[randN]);
         resample.dat.push_back(frames.dat[randN]);
         resample.bin.push_back(frames.bin[randN]);

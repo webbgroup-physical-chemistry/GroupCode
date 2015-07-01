@@ -56,6 +56,7 @@ double calculate_field( int istart, int iend, t_topology top, t_trxframe fr, rve
 //        fprintf(stderr,"%.4f %.4f %.4f\n",xyz[0],xyz[1],xyz[2]);
         r2 = dot(xyz,xyz);
         r = pow(r2,.5);
+        std::cout << r << std::endl;
         rr3 = 1.0 / ( r * r2 );
         for (int j=0;j<3;j++) {
             field[j] += rr3 * top.atoms.atom[i].q * xyz[j];

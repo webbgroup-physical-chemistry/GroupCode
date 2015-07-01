@@ -315,8 +315,7 @@ int gmx_gmx2pqr(int argc, const char * argv[])
                 efield -= afield;
             }
         }
-        fprintf(fout,"%18.6e\n",efield);
-        
+        fprintf(fout,"%18.6e",efield);
     } while(read_next_frame(oenv, status, &fr));
     fclose(fout);
     return 0;

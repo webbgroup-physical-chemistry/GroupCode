@@ -42,9 +42,18 @@
       <PathRunnable
          FilePath = "/Users/ritchie/Utilities/new_gromacs/gmx2xyz/gmx2xyz/gmx2xyz">
       </PathRunnable>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "3CE44AB91768FEB10017155B"
+            BuildableName = "gmx2xyz_target"
+            BlueprintName = "gmx2xyz_target"
+            ReferencedContainer = "container:gmx2xyz.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-a /Users/ritchie/Desktop/tmp_amoeba/amoeba.prm"
+            argument = "-a /Users/ritchie/software/tinker/params/CNC_amoebabio09.prm"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

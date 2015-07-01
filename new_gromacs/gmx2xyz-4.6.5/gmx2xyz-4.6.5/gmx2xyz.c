@@ -302,27 +302,28 @@ amoeba_parm * read_amoeba_parameters( const char *parm_name )
         if (strncmp(b,"biotype",3) == 0 ) {
             param = realloc(param,sizeof(amoeba_parm)*n+1);
             param[n]=ambernames(param[n],char4,char5,char6,char7,char8,atomname);
+            printf("%i %s %s %i\n",n,param[n].resname,param[n].atomname,param[n].atomid);
             //            printf("%s",line);
             //            printf("outside: %s %s %i\n\n",param[n].resname,param[n].atomname,param[n].atomid);
             n++;
         }
     }
-    //    for (int i=0;i<n;i++){printf("%i %s %s %i\n",i,param[i].resname,param[i].atomname,param[i].atomid);}
+    printf("There are %i in param\n",n);
+    for (int i=0;i<n;i++){printf("2nd go! %i %s %s %i\n",i,param[i].resname,param[i].atomname,param[i].atomid);}
     return param;
 }
 
 int * parm_order(int * order, t_topology top, amoeba_parm * parms, int nparams, int i_index, atom_id *index )
 {
-    int resid;
-    int atomid;
-    int matchlen;
-    int i;
+    int resid = 0;
+    int atomid = 0;
+    int matchlen = 0;
+    int i = 0;
     char atomname[5];
     char resname[5];
     for (int n=0;n<i_index;n++) {
-        i=index[n];
-        resid = top.atoms.atom[i].resind;
-        atomid=0;
+        i = index[n];
+        resid = top.atoms.atom[index[n]].resind;
         strcpy(resname,*top.atoms.resinfo[resid].name);
         strcpy(atomname,*top.atoms.atomname[i]);
         /*// I realized that since it's usually 1-2 characters shorter,
@@ -378,17 +379,22 @@ int * parm_order(int * order, t_topology top, amoeba_parm * parms, int nparams, 
          }
          */
         matchlen=strlen(atomname)+1;
+
         for (int ii=0 ; ii<4 ; ii++) {
+            printf("%i\n",ii);
             //printf("\n%5i %6i%s %6s(%i) ",i,resid,resname,atomname,matchlen-ii);
             for (int k=0;k<nparams;k++) {
+                printf(" %i of %i\n",k,nparams);
+                printf("  %s\n",resname);
+                printf("   %s\n",parms[k].resname);
                 if (strncmp(resname, parms[k].resname, strlen(resname)+1) == 0 ) {
-                    //printf("Comparing atom %5i %6i%s %6s(%i) to %s %6s\n",i,resid,resname,atomname,matchlen-ii,parms[k].resname,parms[k].atomname);
+                    printf("Comparing atom %5i %6i%s %6s(%i) to %s %6s\n",i,resid,resname,atomname,matchlen-ii,parms[k].resname,parms[k].atomname);
                     if (strncmp(atomname,parms[k].atomname,matchlen-ii) == 0) {
-                        /*
-                         printf("<%s ",parms[k].resname);
-                         printf("%s ",parms[k].atomname);
-                         printf("%5i> ",parms[k].atomid);
-                         */
+                        if (strncmp(resname,"CNC",3) == 0){
+                        printf("\n<%s ",parms[k].resname);
+                        printf("%s ",parms[k].atomname);
+                        printf("%5i> ",parms[k].atomid);
+                        }
                         atomid=parms[k].atomid;
                         order[i]=atomid;
                         if (atomid != 0) { break; }
@@ -415,11 +421,11 @@ int * parm_order(int * order, t_topology top, amoeba_parm * parms, int nparams, 
              ))
         {
             atomid = 0;
-            strcpy(resname,&resname[1]);
+            //strcpy(resname,&resname[1]);
             for (int ii=0 ; ii<matchlen-1 ; ii++) {
-                //                    printf("\n%5i %6i%s %6s(%i) ",i,resid,resname,atomname,matchlen-ii);
                 for (int k=0;k<nparams;k++) {
-                    if (strncmp(resname, parms[k].resname, strlen(resname)+1) == 0 ) {
+                    if (strncmp(&resname[1], parms[k].resname, strlen(resname)) == 0 ) {
+
                         if (strncmp(atomname,parms[k].atomname,matchlen-ii) == 0) {
                             /*
                              printf("<%s ",parms[k].resname);
@@ -453,17 +459,17 @@ int * parm_order(int * order, t_topology top, amoeba_parm * parms, int nparams, 
                   ))
         {
             atomid = 0;
-            strcpy(resname,&resname[1]);
+            //strcpy(resname,&resname[1]);
             for (int ii=0 ; ii<matchlen-1 ; ii++) {
-                //            printf("\n%5i %6i%s %6s(%i) ",i,resid,resname,atomname,matchlen-ii);
+                //printf("\n%5i %6i%s %6s(%i) ",i,resid,resname,atomname,matchlen-ii);
                 for (int k=0;k<nparams;k++) {
-                    if (strncmp(resname, parms[k].resname, strlen(resname)+1) == 0 ) {
+                    if (strncmp(&resname[1], parms[k].resname, strlen(resname)) == 0 ) {
                         if (strncmp(atomname,parms[k].atomname,matchlen-ii) == 0) {
                             /*
                              printf("<%s ",parms[k].resname);
                              printf("%s ",parms[k].atomname);
                              printf("%5i> ",parms[k].atomid);
-                             */
+                            */
                             atomid=parms[k].atomid;
                             order[i]=atomid;
                             if (atomid != 0) { break; }
@@ -475,9 +481,9 @@ int * parm_order(int * order, t_topology top, amoeba_parm * parms, int nparams, 
                 if (atomid != 0) { break; }
             }
         }
-        if (atomid ==0) {
+        if (atomid == 0) {
             printf("\nMissing parameters");
-            printf("\n%5i %6i%s %6s",i,resid,resname,atomname);
+            printf("\n%5i %6i%s %6s\n",i,resid,resname,atomname);
             exit(1);
         }
     }
@@ -549,16 +555,16 @@ int gmx_gmx2xyz(int argc, char *argv[])
     for (int i=0;i<top.atoms.nr;i++){
         if (strncmp(*top.atoms.atomname[i],"OW",2) == 0) {
             bonds[i+1].nb = 2;
-            bonds[i+1].bond[0] = i+1;
-            bonds[i+1].bond[1] = i+2;
+            bonds[i+1].bond[0] = i+2;
+            bonds[i+1].bond[1] = i+3;
         }
         else if (strncmp(*top.atoms.atomname[i],"HW1",3) ==0) {
             bonds[i+1].nb = 1;
-            bonds[i+1].bond[0] = i-1;
+            bonds[i+1].bond[0] = i-0;
         }
         else if (strncmp(*top.atoms.atomname[i],"HW2",3) ==0) {
             bonds[i+1].nb = 1;
-            bonds[i+1].bond[0] = i-2;
+            bonds[i+1].bond[0] = i-1;
         }
     }
     /*
@@ -575,7 +581,7 @@ int gmx_gmx2xyz(int argc, char *argv[])
     
     int * parmid = (int*)malloc(sizeof(int)*top.atoms.nr);
     parm_order(parmid, top, atoms_types, nparams,i_index,ind_index);
-    
+
     read_first_frame(oenv, &status, in_file, &fr, flags);
     int resid;
     //    strncpy(xyz_file,out_file,strlen(out_file)-4);

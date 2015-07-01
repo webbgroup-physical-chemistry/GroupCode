@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <sstream>
 #include <fstream>
+#include <omp.h>
+#include <cstring>
 // gromacs c headers
 #ifdef __cplusplus
 extern "C"  
