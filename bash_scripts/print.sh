@@ -1,5 +1,7 @@
 #! /bin/bash
 
+WEBB=webbgroup@pinotnoir.cm.utexas.edu
+PRINTDIR=/Users/webbgroup/Desktop/Andrew/Printing
 
 for arg in "$@" ; do
 
@@ -11,11 +13,21 @@ for arg in "$@" ; do
 
     new=`basename "$arg" | sed 's/ //g' | sed 's/^/temp./'`
     cp "$arg" $new
-    scp $new webbgroup@pinotnoir.cm.utexas.edu:/Users/webbgroup/Desktop/Andrew/Printing
+
+    if ! [[ $(file -b $new) == "PDF"* ]] ; then 
+        echo ; echo "ALERT: $arg could not print"
+        echo "-------> File must be in PDF format. "
+        echo "-------> Please reprint document as 'print document.pdf'" ; echo ;  
+## If the file type is not PDF, then print error message and do not Print
+## If it is a PDF, proceed with printing procedure -- jtf 03 Mar 15
+        exit
+        fi
+        
+    scp $new $WEBB:$PRINTDIR
     echo; echo "Submitting $new to print..."
-    ssh webbgroup@pinotnoir.cm.utexas.edu 'lp -d Dell_3130cn_Color_Laser' /Users/webbgroup/Desktop/Andrew/Printing/$new
+    ssh $WEBB 'lp -d Dell_3130cn_Color_Laser' $PRINTDIR/$new
     echo "Cleaning up..." ; echo
-    ssh webbgroup@pinotnoir.cm.utexas.edu rm /Users/webbgroup/Desktop/Andrew/Printing/$new
+    ssh $WEBB rm $PRINTDIR/$new
     rm $new
 
 done
